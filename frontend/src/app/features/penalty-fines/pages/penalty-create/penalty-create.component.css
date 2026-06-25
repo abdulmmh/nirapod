@@ -1,0 +1,74 @@
+.section-icon.red {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+.section-icon.orange {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+}
+.section-icon.purple {
+  background: linear-gradient(135deg, #7c3aed, #a855f7);
+}
+.field-hint.danger {
+  color: #e74c3c;
+  font-weight: 600;
+}
+.calc-field {
+  background: #fff0f0 !important;
+  color: #e74c3c !important;
+  font-weight: 700;
+  cursor: not-allowed;
+  border-color: #ffcccc !important;
+}
+
+/* Penalty Summary */
+.penalty-summary {
+  margin-top: 20px;
+  border: 1.5px solid #ffcccc;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.ps-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 18px;
+}
+.ps-label {
+  font-size: 13px;
+  color: #666;
+  font-weight: 500;
+}
+.ps-label.total {
+  font-size: 14px;
+  font-weight: 700;
+  color: #1a2340;
+}
+.ps-value {
+  font-size: 14px;
+  font-weight: 700;
+}
+.ps-value.penalty {
+  color: #e74c3c;
+}
+.ps-value.interest {
+  color: #f59e0b;
+}
+.ps-value.total {
+  font-size: 20px;
+  font-weight: 800;
+  color: #e74c3c;
+}
+.ps-divider {
+  height: 1px;
+  background: #ffcccc;
+}
+.total-row {
+  background: #fff0f0;
+  padding: 12px 18px;
+}
+/* Submit override — red is semantic */
+.btn-submit.danger {
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+}
+.btn-submit.danger:hover:not(:disabled) {
+  box-shadow: 0 4px 14px rgba(231, 76, 60, 0.35);
+}

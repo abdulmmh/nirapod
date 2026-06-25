@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📋 Review &amp; Submit"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Confirm all details before submission"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="#F0F0F0" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👤 Taxpayer"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:stretchColumns="1">
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Name" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvReviewName" android:gravity="end" android:textStyle="bold" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="TIN" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvReviewTin" android:gravity="end" android:fontFamily="monospace" />
+                </TableRow>
+            </TableLayout>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="🧾 AIT Details"
+                android:textColor="@color/primary"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:stretchColumns="1">
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Source Type" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvReviewSource" android:gravity="end" android:textStyle="bold" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Taxable Value" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvReviewTaxable" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="AIT Rate" android:textSize="12sp" />
+                    <TextView android:id="@+id/tvReviewRate" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="12dp" android:background="#F5F3FF">
+                    <TextView android:text="AIT Amount" android:textStyle="bold" android:textColor="@color/primary" android:paddingStart="8dp" />
+                    <TextView android:id="@+id/tvReviewAit" android:gravity="end" android:textStyle="bold" android:textColor="@color/primary" android:paddingEnd="8dp" />
+                </TableRow>
+            </TableLayout>
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📎 Supporting Documents"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Required before submission"
+                android:textColor="@color/text_secondary"
+                android:textSize="11sp" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginVertical="12dp"
+                android:background="#F0F0F0" />
+
+            <LinearLayout
+                android:id="@+id/btnUpload"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:gravity="center"
+                android:padding="24dp"
+                android:background="@drawable/spinner_bg"
+                android:clickable="true"
+                android:focusable="true">
+
+                <ImageView
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    android:src="@drawable/ic_plus"
+                    app:tint="@color/primary" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Click to upload documents (PDF, JPG, PNG)"
+                    android:textSize="12sp"
+                    android:textColor="@color/text_secondary" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tvFileList"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="No files selected"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

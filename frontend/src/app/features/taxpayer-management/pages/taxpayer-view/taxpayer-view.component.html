@@ -1,0 +1,371 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>Taxpayer Details</h4>
+    <p>Full taxpayer profile information.</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-back" (click)="onBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <button *canDo="'edit'" class="btn-edit-top" (click)="onEdit()">
+      <i class="bi bi-pencil-fill"></i> Edit
+    </button>
+  </div>
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-border text-primary"></div>
+</div>
+
+<ng-container *ngIf="!isLoading && taxpayer">
+
+  <div class="view-header-card blue">
+    <div class="profile-avatar-wrap">
+      <div class="profile-avatar-wrap">
+        <div class="photo-container">
+          <img *ngIf="taxpayer.photoPath" [src]="getPhotoUrl(taxpayer.photoPath)" class="profile-photo"
+            alt="Profile photo" />
+          <div class="profile-avatar" *ngIf="!taxpayer.photoPath">
+            {{ getDisplayName(taxpayer).charAt(0) | uppercase }}
+          </div>
+        </div>
+      </div>
+      <div>
+        <div class="profile-name">{{ getDisplayName(taxpayer) }}</div>
+
+        <div class="profile-tin" [ngStyle]="{'color': taxpayer.tinNumber ? 'rgba(255,255,255,0.75)' : '#fde8c0'}">
+          {{ taxpayer.tinNumber || 'TIN Not Assigned' }}
+        </div>
+
+        <div class="profile-meta">
+          <span class="type-pill">{{ taxpayer.taxpayerType.typeName }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(taxpayer.status)">
+            {{ taxpayer.status }}
+          </span>
+        </div>
+      </div>
+    </div>
+    <div class="view-header-right">
+      <div class="profile-stat">
+        <span class="ps-label">Registered Date</span>
+        <span class="ps-value">{{ taxpayer.registrationDate | date:'mediumDate' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="details-grid">
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-person-badge-fill"></i>
+        <span>{{ isCompany ? 'Company Details' : 'Personal Identity' }}</span>
+      </div>
+      <div class="detail-body">
+
+        <div class="detail-row">
+          <span class="detail-label">TIN Number</span>
+          <span class="detail-value">
+            <span class="code-badge" *ngIf="taxpayer.tinNumber">{{ taxpayer.tinNumber }}</span>
+            <span class="status-badge status-pending" *ngIf="!taxpayer.tinNumber">Not Assigned</span>
+          </span>
+        </div>
+
+        <div class="detail-row">
+          <span class="detail-label">Name</span>
+          <span class="detail-value fw-bold">{{ getDisplayName(taxpayer) }}</span>
+        </div>
+
+        <ng-container *ngIf="isIndividual">
+          <div class="detail-row" *ngIf="taxpayer.nid">
+            <span class="detail-label">National ID</span>
+            <span class="detail-value"><span class="code-badge">{{ taxpayer.nid }}</span></span>
+          </div>
+          <div class="detail-row" *ngIf="taxpayer.fathersName">
+            <span class="detail-label">Father's Name</span>
+            <span class="detail-value">{{ taxpayer.fathersName }}</span>
+          </div>
+          <div class="detail-row" *ngIf="taxpayer.mothersName">
+            <span class="detail-label">Mother's Name</span>
+            <span class="detail-value">{{ taxpayer.mothersName }}</span>
+          </div>
+          <div class="detail-row" *ngIf="taxpayer.dateOfBirth">
+            <span class="detail-label">Date of Birth</span>
+            <span class="detail-value">{{ taxpayer.dateOfBirth | date:'mediumDate' }}</span>
+          </div>
+        </ng-container>
+
+        <ng-container *ngIf="isCompany">
+          <div class="detail-row" *ngIf="taxpayer.tradeLicenseNo">
+            <span class="detail-label">Trade License</span>
+            <span class="detail-value"><span class="code-badge">{{ taxpayer.tradeLicenseNo }}</span></span>
+          </div>
+          <div class="detail-row" *ngIf="taxpayer.rjscNo">
+            <span class="detail-label">RJSC No</span>
+            <span class="detail-value"><span class="code-badge">{{ taxpayer.rjscNo }}</span></span>
+          </div>
+          <div class="detail-row" *ngIf="taxpayer.incorporationDate">
+            <span class="detail-label">Incorporation Date</span>
+            <span class="detail-value">{{ taxpayer.incorporationDate | date:'mediumDate' }}</span>
+          </div>
+        </ng-container>
+
+      </div>
+    </div>
+
+    <div class="detail-card" *ngIf="isCompany">
+      <div class="detail-card-header">
+        <i class="bi bi-person-vcard-fill"></i>
+        <span>Authorized Representative</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Representative Name</span>
+          <span class="detail-value fw-bold">{{ taxpayer.authorizedPersonName || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Designation</span>
+          <span class="detail-value">{{ taxpayer.authorizedPersonDesignation || 'N/A' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">National ID (NID)</span>
+          <span class="detail-value">
+            <span class="code-badge" *ngIf="taxpayer.authorizedPersonNid">{{ taxpayer.authorizedPersonNid }}</span>
+            <span *ngIf="!taxpayer.authorizedPersonNid">N/A</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-telephone-fill"></i>
+        <span>Contact Information</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Email</span>
+          <span class="detail-value">{{ taxpayer.email }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Phone</span>
+          <span class="detail-value">{{ taxpayer.phone }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-geo-alt-fill"></i>
+        <span>Address Details</span>
+      </div>
+      <div class="detail-body">
+
+        <div class="detail-row" *ngIf="taxpayer.presentAddress">
+          <span class="detail-label">Present Address</span>
+          <span class="detail-value address-val">
+            {{ taxpayer.presentAddress.roadVillage ? taxpayer.presentAddress.roadVillage + ', ' : '' }}
+            {{ taxpayer.presentAddress.thana }}, {{ taxpayer.presentAddress.district }}, {{
+            taxpayer.presentAddress.division }}
+          </span>
+        </div>
+
+        <div class="detail-row" *ngIf="taxpayer.permanentAddress && !taxpayer.sameAsPermanent">
+          <span class="detail-label">Permanent Address</span>
+          <span class="detail-value address-val">
+            {{ taxpayer.permanentAddress.roadVillage ? taxpayer.permanentAddress.roadVillage + ', ' : '' }}
+            {{ taxpayer.permanentAddress.thana }}, {{ taxpayer.permanentAddress.district }}, {{
+            taxpayer.permanentAddress.division }}
+          </span>
+        </div>
+
+        <div class="detail-row" *ngIf="taxpayer.sameAsPermanent">
+          <span class="detail-label">Permanent Address</span>
+          <span class="detail-value address-val" style="color: #666; font-style: italic;">
+            Same as Present Address
+          </span>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-shield-fill-check"></i>
+        <span>Account Status</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="detail-value">
+            <span class="status-badge" [ngClass]="getStatusClass(taxpayer.status)">
+              {{ taxpayer.status }}
+            </span>
+          </span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Registration Date</span>
+          <span class="detail-value">{{ taxpayer.registrationDate | date:'mediumDate' }}</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+  <!-- Officer Review Section -->
+  <div class="review-card" *ngIf="canReview && (isPendingReview || isApproved || isRejected)">
+
+    <div class="review-card-header">
+      <i class="bi bi-shield-fill-check"></i>
+      <span>Application Review</span>
+      <span class="approval-badge" [ngClass]="{
+        'approval-pending':  isPendingReview,
+        'approval-approved': isApproved,
+        'approval-rejected': isRejected
+      }">
+        {{ isPendingReview ? 'Pending Review' : isApproved ? 'Approved' : 'Rejected' }}
+      </span>
+    </div>
+
+    <!-- Already Approved -->
+    <div class="review-done" *ngIf="isApproved">
+      <i class="bi bi-check-circle-fill text-success"></i>
+      <div>
+        <div class="review-done-title">TIN Issued Successfully</div>
+        <div class="review-done-sub">TIN: {{ taxpayer.tinNumber }}</div>
+        <div class="review-done-sub" *ngIf="taxpayer.reviewNotes">
+          Notes: {{ taxpayer.reviewNotes }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Already Rejected -->
+    <div class="review-done rejected" *ngIf="isRejected">
+      <i class="bi bi-x-circle-fill text-danger"></i>
+      <div>
+        <div class="review-done-title">Application Rejected</div>
+        <div class="review-done-sub" *ngIf="taxpayer.reviewNotes">
+          Reason: {{ taxpayer.reviewNotes }}
+        </div>
+      </div>
+    </div>
+
+    <!-- Pending — show form -->
+    <div class="review-form" *ngIf="isPendingReview">
+
+      <div class="review-info">
+        <i class="bi bi-info-circle"></i>
+        <span>Review taxpayer details above, then assign Tax Zone and Circle to issue TIN.</span>
+      </div>
+
+      <!-- Load Zones button -->
+      <div class="review-field" *ngIf="zones.length === 0">
+        <button class="btn-load-zones" (click)="loadZones()" [disabled]="loadingZones">
+          <i class="bi" [ngClass]="loadingZones ? 'bi-hourglass-split' : 'bi-geo-alt-fill'"></i>
+          {{ loadingZones ? 'Loading zones...' : 'Load Tax Zones from taxpayer district' }}
+        </button>
+        <div class="zone-hint" *ngIf="taxpayer.presentAddress?.district">
+          District: <strong>{{ taxpayer.presentAddress?.district }}</strong>
+        </div>
+        <div class="zone-hint error" *ngIf="!taxpayer.presentAddress?.district">
+          ⚠️ Taxpayer has no district. Ask them to update profile first.
+        </div>
+      </div>
+
+      <!-- Zone dropdown -->
+      <div class="review-field" *ngIf="zones.length > 0">
+        <label>Tax Zone *</label>
+        <select [(ngModel)]="approveZone" (change)="onZoneChange()">
+          <option value="">Select Tax Zone</option>
+          <option *ngFor="let z of zones" [value]="z.name">{{ z.name }}</option>
+        </select>
+      </div>
+
+      <!-- Circle dropdown -->
+      <div class="review-field" *ngIf="approveZone">
+        <label>Tax Circle *</label>
+        <select [(ngModel)]="approveCircle" [disabled]="loadingCircles">
+          <option value="">{{ loadingCircles ? 'Loading...' : 'Select Tax Circle' }}</option>
+          <option *ngFor="let c of circles" [value]="c.name">{{ c.name }}</option>
+        </select>
+      </div>
+
+      <!-- Notes -->
+      <div class="review-field">
+        <label>Review Notes (optional)</label>
+        <textarea [(ngModel)]="reviewNotes" rows="2" placeholder="Any notes for this application..."></textarea>
+      </div>
+
+      <!-- Buttons -->
+      <div class="review-actions">
+        <button class="btn-reject-action" (click)="onReject()" [disabled]="isProcessing">
+          <i class="bi bi-x-circle-fill"></i>
+          {{ isProcessing ? 'Processing...' : 'Reject Application' }}
+        </button>
+        <button class="btn-approve-action" (click)="onApprove()" [disabled]="isProcessing">
+          <i class="bi bi-check-circle-fill"></i>
+          {{ isProcessing ? 'Processing...' : 'Approve & Issue TIN' }}
+        </button>
+        <button class="btn-send-notice" (click)="openNoticeModal(taxpayer.id)" [disabled]="isProcessing">
+          <i class="bi bi-bell-fill"></i> Send Notice
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+
+</ng-container>
+
+
+<!-- Notice Modal -->
+<div class="modal-overlay" *ngIf="showNoticeModal">
+  <div class="modal-card" style="max-width:500px;">
+    <div class="modal-accent" style="background:#1a3f8f;"></div>
+    <div class="modal-icon-wrap" style="background:#e8eeff;">
+      <i class="bi bi-bell-fill" style="color:#1a3f8f; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Send Notice to Taxpayer</p>
+
+    <div class="modal-form">
+      <div class="modal-field">
+        <label>Notice Type</label>
+        <select [(ngModel)]="noticeType">
+          <option>General</option>
+          <option>Tax Due</option>
+          <option>Audit Notice</option>
+          <option>Compliance</option>
+          <option>Reminder</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Priority</label>
+        <select [(ngModel)]="noticePriority">
+          <option>Low</option>
+          <option>Normal</option>
+          <option>High</option>
+          <option>Urgent</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Subject *</label>
+        <input type="text" [(ngModel)]="noticeSubject"
+               placeholder="Enter notice subject"/>
+      </div>
+      <div class="modal-field">
+        <label>Message *</label>
+        <textarea [(ngModel)]="noticeBody" rows="4"
+                  placeholder="Enter notice message..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="closeNoticeModal()">Cancel</button>
+      <button class="btn-modal-confirm"
+              style="background:#1a3f8f;"
+              (click)="sendNotice()"
+              [disabled]="isSendingNotice">
+        <i class="bi bi-send-fill"></i>
+        {{ isSendingNotice ? 'Sending...' : 'Send Notice' }}
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingBottom="16dp">
+
+    <LinearLayout
+        android:layout_width="32dp"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center_horizontal">
+
+        <View
+            android:id="@+id/tl_dot"
+            android:layout_width="10dp"
+            android:layout_height="10dp"
+            android:background="@drawable/avatar_circle_bg"
+            android:backgroundTint="@color/blue_text"/>
+
+        <View
+            android:id="@+id/tl_line"
+            android:layout_width="2dp"
+            android:layout_height="match_parent"
+            android:background="@color/divider"/>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_marginStart="12dp">
+
+        <TextView
+            android:id="@+id/tv_action_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="14sp"
+            android:textStyle="bold"
+            android:textColor="@color/text_primary"
+            android:text="Return Submitted"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="2dp">
+
+            <TextView
+                android:id="@+id/tv_action_from"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:text="Draft"/>
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textColor="@color/text_secondary"
+                android:text=" → "/>
+
+            <TextView
+                android:id="@+id/tv_action_to"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/blue_text"
+                android:text="Submitted"/>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="4dp">
+
+            <TextView
+                android:id="@+id/tv_action_user"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="11sp"
+                android:textStyle="bold"
+                android:textColor="@color/purple_text"
+                android:text="👤 Mahadi Hasan"/>
+
+            <TextView
+                android:id="@+id/tv_action_role"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="10sp"
+                android:background="@color/purple_bg"
+                android:textColor="@color/purple_text"
+                android:paddingHorizontal="6dp"
+                android:paddingVertical="1dp"
+                android:layout_marginStart="8dp"
+                android:text="TAXPAYER"/>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/tv_action_remarks"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textSize="12sp"
+            android:textColor="#666"
+            android:background="@color/amber_bg"
+            android:padding="8dp"
+            android:layout_marginTop="6dp"
+            android:text="Initial submission for AY 2024-25"
+            android:visibility="gone"/>
+
+        <TextView
+            android:id="@+id/tv_action_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="11sp"
+            android:textColor="#AAA"
+            android:layout_marginTop="4dp"
+            android:text="15 June 2026, 10:33 AM"/>
+
+    </LinearLayout>
+</LinearLayout>

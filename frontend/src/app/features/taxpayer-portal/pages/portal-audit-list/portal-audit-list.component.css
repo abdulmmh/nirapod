@@ -1,0 +1,157 @@
+.mobile-card-alert {
+  border-left: 3px solid #e65100 !important;
+}
+
+.action-required-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff3e0;
+  color: #c84500;
+  border: 1px solid #fddcb5;
+  border-radius: 20px;
+  padding: 3px 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.action-required-chip i {
+  font-size: 11px;
+}
+
+.no-action {
+  color: #d1d5db;
+  font-size: 13px;
+}
+
+.type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 8px;
+  border-radius: 4px;
+  text-transform: uppercase;
+}
+.type-badge.type-desk {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+.type-badge.type-field {
+  background: #fef7e0;
+  color: #b45309;
+}
+.type-badge.type-comp {
+  background: #f3e8ff;
+  color: #6d28d9;
+}
+.type-badge.type-vat {
+  background: #ecfdf5;
+  color: #059669;
+}
+.type-badge.type-refund {
+  background: #fff1f2;
+  color: #be123c;
+}
+.type-badge.type-special {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.case-code {
+  font-family: "Courier New", monospace;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1a6fbf;
+  background: #ebf3ff;
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+.due-overdue {
+  color: #c62828;
+  font-weight: 600;
+  font-size: 12px;
+}
+
+.badge-orange {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #fddcb5;
+}
+.badge-teal {
+  background: #e0f7fa;
+  color: #00695c;
+  border: 1px solid #b2ebf2;
+}
+.badge-purple {
+  background: #f3e8ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+.badge-indigo {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+.badge-yellow {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-pink {
+  background: #fce7f3;
+  color: #9d174d;
+  border: 1px solid #fbcfe8;
+}
+.badge-lime {
+  background: #f7fee7;
+  color: #3f6212;
+  border: 1px solid #d9f99d;
+}
+.badge-muted {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+.page-wrapper {
+  padding: 0;
+}
+.table-responsive {
+  padding: 14px 16px 16px;
+  background: #fff;
+}
+.data-table {
+  min-width: 1000px;
+}
+.data-table th:last-child,
+.data-table td:last-child {
+  text-align: right;
+}
+.mobile-cards {
+  padding: 12px;
+}
+.mobile-card {
+  border-color: #e2e8f0;
+  background: #fff;
+}
+.mobile-card-alert {
+  background: #fff7ed;
+  border-left-color: #d97706 !important;
+}
+.mobile-card-header {
+  gap: 12px;
+}
+.mobile-card-actions button {
+  width: 100%;
+}
+.loading-row {
+  padding: 16px 16px;
+  background: #fff;
+  border-bottom: 0.5px solid #e2e8f0;
+}
+.empty-state {
+  padding: 30px 0;
+}
+.empty-state p {
+  margin: 10px 0 0;
+  color: #6b7280;
+}

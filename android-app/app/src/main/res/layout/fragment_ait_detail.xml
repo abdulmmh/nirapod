@@ -1,0 +1,168 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="AIT Review"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Review, verify, and process this advance income tax record."
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:paddingStart="0dp"
+                android:text="Back to Queue"
+                android:textAllCaps="false"
+                app:icon="@drawable/ic_eye"
+                app:iconPadding="8dp" />
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:id="@+id/layout_content"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Status Tracker -->
+            <HorizontalScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:scrollbars="none"
+                android:layout_marginBottom="20dp">
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:orientation="horizontal"
+                    android:gravity="center_vertical"
+                    android:paddingHorizontal="8dp">
+
+                    <TextView android:id="@+id/tv_step_draft" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Draft" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+                    <View android:layout_width="20dp" android:layout_height="1dp" android:background="#EEE" />
+                    <TextView android:id="@+id/tv_step_submitted" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Submitted" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+                    <View android:layout_width="20dp" android:layout_height="1dp" android:background="#EEE" />
+                    <TextView android:id="@+id/tv_step_pending" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Pending" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+                    <View android:layout_width="20dp" android:layout_height="1dp" android:background="#EEE" />
+                    <TextView android:id="@+id/tv_step_review" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="In Review" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+                    <View android:layout_width="20dp" android:layout_height="1dp" android:background="#EEE" />
+                    <TextView android:id="@+id/tv_step_approved" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Approved" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+                    <View android:layout_width="20dp" android:layout_height="1dp" android:background="#EEE" />
+                    <TextView android:id="@+id/tv_step_credited" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:paddingHorizontal="12dp" android:paddingVertical="6dp" android:text="Credited" android:textColor="@color/text_secondary" android:textSize="11sp" android:textStyle="bold"/>
+
+                </LinearLayout>
+            </HorizontalScrollView>
+
+            <!-- Taxpayer Info -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="👤 Taxpayer Information" android:textStyle="bold" android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Name" android:textSize="12sp"/><TextView android:id="@+id/tv_val_name" android:gravity="end" android:textStyle="bold"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="TIN" android:textSize="12sp"/><TextView android:id="@+id/tv_val_tin" android:gravity="end" android:fontFamily="monospace"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Fiscal Year" android:textSize="12sp"/><TextView android:id="@+id/tv_val_year" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Submitted" android:textSize="12sp"/><TextView android:id="@+id/tv_val_submitted" android:gravity="end"/></TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- AIT Details -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:id="@+id/tv_ref_no_title" android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="📄 AIT Record" android:textStyle="bold" android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Source Type" android:textSize="12sp"/><TextView android:id="@+id/tv_val_source" android:gravity="end" android:textStyle="bold"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Deductor" android:textSize="12sp"/><TextView android:id="@+id/tv_val_deductor" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Taxable Value" android:textSize="12sp"/><TextView android:id="@+id/tv_val_taxable" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="AIT Rate" android:textSize="12sp"/><TextView android:id="@+id/tv_val_rate" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="4dp" android:background="#F5F3FF"><TextView android:text="Calculated AIT" android:textSize="13sp" android:textStyle="bold" android:textColor="@color/primary"/><TextView android:id="@+id/tv_val_ait" android:gravity="end" android:textStyle="bold" android:textColor="@color/primary" android:textSize="13sp"/></TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Challan Info -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="🏦 Challan Verification" android:textStyle="bold" android:textColor="@color/text_primary" android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Challan No." android:textSize="12sp"/><TextView android:id="@+id/tv_val_challan" android:gravity="end" android:fontFamily="monospace"/></TableRow>
+                        <TableRow android:paddingVertical="4dp"><TextView android:text="Bank" android:textSize="12sp"/><TextView android:id="@+id/tv_val_bank" android:gravity="end"/></TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+    <ProgressBar
+        android:id="@+id/pb_loading"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:visibility="gone" />
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

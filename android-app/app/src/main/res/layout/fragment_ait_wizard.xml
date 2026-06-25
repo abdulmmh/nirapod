@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Advance Income Tax (AIT)"
+                android:textColor="@color/primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:id="@+id/tv_wizard_sub"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="File your advance income tax record."
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp"
+                android:layout_marginTop="4dp" />
+
+            <!-- Step Tracker -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:gravity="center"
+                android:orientation="horizontal">
+
+                <LinearLayout android:id="@+id/step1_indicator" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tv_step1_dot" android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/badge_bg" android:gravity="center" android:text="1" android:textColor="@color/white" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Taxpayer" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/primary"/>
+                </LinearLayout>
+
+                <View android:layout_width="40dp" android:layout_height="2dp" android:background="#EEE" android:layout_marginHorizontal="8dp" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:id="@+id/step2_indicator" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tv_step2_dot" android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:gravity="center" android:text="2" android:textColor="@color/text_secondary" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Details" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+
+                <View android:layout_width="40dp" android:layout_height="2dp" android:background="#EEE" android:layout_marginHorizontal="8dp" android:layout_marginBottom="16dp"/>
+
+                <LinearLayout android:id="@+id/step3_indicator" android:layout_width="wrap_content" android:layout_height="wrap_content" android:orientation="vertical" android:gravity="center">
+                    <TextView android:id="@+id/tv_step3_dot" android:layout_width="32dp" android:layout_height="32dp" android:background="@drawable/badge_bg" android:backgroundTint="#F3F4F6" android:gravity="center" android:text="3" android:textColor="@color/text_secondary" android:textStyle="bold"/>
+                    <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:text="Review" android:textSize="10sp" android:textStyle="bold" android:textColor="@color/text_secondary"/>
+                </LinearLayout>
+            </LinearLayout>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <FrameLayout
+            android:id="@+id/wizard_container"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="16dp" />
+    </androidx.core.widget.NestedScrollView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:background="@color/white"
+        android:elevation="8dp"
+        android:padding="16dp"
+        android:orientation="horizontal">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_back"
+            style="@style/Widget.MaterialComponents.Button.TextButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Back"
+            android:textAllCaps="false"
+            android:visibility="gone" />
+
+        <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_next"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Next: AIT Details"
+            android:textAllCaps="false"
+            app:cornerRadius="10dp" />
+    </LinearLayout>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

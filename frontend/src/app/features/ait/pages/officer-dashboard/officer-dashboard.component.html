@@ -1,0 +1,355 @@
+
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>AIT Officer Dashboard</h4>
+    <p>Officer: {{ officerName }} &nbsp;·&nbsp; FY 2024–2025</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-back" (click)="refreshQueue()">
+      <i class="bi bi-arrow-clockwise"></i> Refresh
+    </button>
+    <button class="btn-add-primary desktop-add-btn" (click)="onExport()">
+      <i class="bi bi-file-earmark-arrow-down"></i> Export
+    </button>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- ── KPI Summary Row ──────────────────────────────────────────────────── -->
+  <div class="kpi-summary-row">
+    <div class="kpi-summary-card">
+      <div class="kpi-summary-icon kpi-purple">
+        <i class="bi bi-inbox-fill"></i>
+      </div>
+      <div class="kpi-summary-body">
+        <div class="kpi-summary-label">My Queue</div>
+        <div class="kpi-summary-value">{{ kpis.myQueue }}</div>
+        <div class="kpi-summary-sub">Awaiting review</div>
+      </div>
+    </div>
+    <div class="kpi-summary-card">
+      <div class="kpi-summary-icon kpi-blue">
+        <i class="bi bi-check2-all"></i>
+      </div>
+      <div class="kpi-summary-body">
+        <div class="kpi-summary-label">Reviewed Today</div>
+        <div class="kpi-summary-value">{{ kpis.reviewedToday }}</div>
+        <div class="kpi-summary-sub">Records processed</div>
+      </div>
+    </div>
+    <div class="kpi-summary-card">
+      <div class="kpi-summary-icon kpi-green">
+        <i class="bi bi-patch-check-fill"></i>
+      </div>
+      <div class="kpi-summary-body">
+        <div class="kpi-summary-label">Approved (Week)</div>
+        <div class="kpi-summary-value">{{ kpis.approvedWeek }}</div>
+        <div class="kpi-summary-sub">Last 7 days</div>
+      </div>
+    </div>
+    <div class="kpi-summary-card">
+      <div class="kpi-summary-icon" [ngClass]="kpis.slaRiskPercent > 30 ? 'kpi-red' : 'kpi-amber'">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+      </div>
+      <div class="kpi-summary-body">
+        <div class="kpi-summary-label">SLA Risk</div>
+        <div class="kpi-summary-value"
+          [style.color]="kpis.slaRiskPercent > 30 ? '#991b1b' : '#92400e'">
+          {{ kpis.slaRiskPercent }}%
+        </div>
+        <div class="kpi-summary-sub">Overdue / at risk</div>
+      </div>
+    </div>
+    <div class="kpi-summary-card">
+      <div class="kpi-summary-icon kpi-teal">
+        <i class="bi bi-graph-up-arrow"></i>
+      </div>
+      <div class="kpi-summary-body">
+        <div class="kpi-summary-label">Approval Rate</div>
+        <div class="kpi-summary-value">{{ approvalRate }}%</div>
+        <div class="kpi-summary-sub">This month</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Status Filter Tabs ───────────────────────────────────────────────── -->
+  <div class="status-tabs">
+    <button class="stab"
+      [class.active]="activeTab === 'ALL'"
+      (click)="setActiveTab('ALL')">
+      All <span class="stab-count">{{ filteredRecords.length }}</span>
+    </button>
+    <button class="stab pending"
+      [class.active]="activeTab === 'PENDING'"
+      (click)="setActiveTab('PENDING')">
+      Pending <span class="stab-count">{{ countByStatus('PENDING') }}</span>
+    </button>
+    <button class="stab review"
+      [class.active]="activeTab === 'UNDER_REVIEW'"
+      (click)="setActiveTab('UNDER_REVIEW')">
+      Under Review <span class="stab-count">{{ countByStatus('UNDER_REVIEW') }}</span>
+    </button>
+    <button class="stab approved"
+      [class.active]="activeTab === 'APPROVED'"
+      (click)="setActiveTab('APPROVED')">
+      Approved <span class="stab-count">{{ countByStatus('APPROVED') }}</span>
+    </button>
+    <button class="stab rejected"
+      [class.active]="activeTab === 'REJECTED'"
+      (click)="setActiveTab('REJECTED')">
+      Rejected <span class="stab-count">{{ countByStatus('REJECTED') }}</span>
+    </button>
+  </div>
+
+  <!-- ── Search & Filters ─────────────────────────────────────────────────── -->
+  <div class="list-search-bar">
+    <div class="search-field-row">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <input type="text"
+          placeholder="Search by TIN, taxpayer name, or reference no..."
+          [(ngModel)]="searchQuery"
+          (input)="onSearchChange()" />
+      </div>
+      <input type="date" class="filter-date"
+        [(ngModel)]="dateFilterFrom"
+        (change)="onDateChange()"
+        title="Filter from date" />
+      <select class="filter-select" (change)="onSlaFilterChange($any($event.target).value)">
+        <option value="">All SLA</option>
+        <option value="at_risk">At Risk (&lt;12hrs)</option>
+        <option value="overdue">Overdue</option>
+      </select>
+      <button class="btn btn-sm btn-outline-secondary"
+        (click)="searchQuery=''; dateFilterFrom=''; slaFilter=''; applyFilters()">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <!-- ── Bulk Action Bar ──────────────────────────────────────────────────── -->
+  <div class="bulk-action-bar" *ngIf="selectedIds.size > 0">
+    <i class="bi bi-check-square-fill" style="color:#1a3f8f"></i>
+    <span class="bulk-count">{{ selectedIds.size }} record(s) selected</span>
+    <div class="bulk-divider"></div>
+    <button class="btn-view" (click)="bulkAssign()">
+      <i class="bi bi-person-check"></i> Assign to Me
+    </button>
+    <button class="btn-view ms-auto" (click)="selectedIds.clear()">
+      <i class="bi bi-x-lg"></i> Clear
+    </button>
+  </div>
+
+  <!-- ── Loading ──────────────────────────────────────────────────────────── -->
+  <div class="loading-row" *ngIf="isLoading">
+    <div class="spinner-border spinner-border-sm" style="color:#7c3aed"></div>
+    <span>Loading queue data…</span>
+  </div>
+
+  <!-- ── Error ────────────────────────────────────────────────────────────── -->
+  <div class="alert-error-row" *ngIf="loadError && !isLoading">
+    <i class="bi bi-exclamation-triangle-fill"></i>
+    <span>{{ loadError }}</span>
+    <button class="btn-view" (click)="refreshQueue()">Retry</button>
+  </div>
+
+  <!-- ── Desktop Table ────────────────────────────────────────────────────── -->
+  <div class="table-responsive desktop-table" *ngIf="!isLoading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th style="width:36px">
+            <input type="checkbox"
+              [checked]="isAllSelected()"
+              (change)="toggleSelectAll()"
+              class="form-check-input" />
+          </th>
+          <th>Ref. No.</th>
+          <th>Taxpayer</th>
+          <th>Source</th>
+          <th>HS Code</th>
+          <th class="text-end">AIT Amount</th>
+          <th>Date</th>
+          <th>SLA</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of getPaginatedRecords()"
+          [class.row-selected]="selectedIds.has(r.id || 0)"
+          [class.row-overdue]="getSlaHours(r) < 0"
+          [class.row-atrisk]="getSlaHours(r) >= 0 && getSlaHours(r) < 12">
+
+          <td>
+            <input type="checkbox"
+              [checked]="selectedIds.has(r.id || 0)"
+              (change)="toggleSelect(r.id || 0)"
+              class="form-check-input" />
+          </td>
+
+          <td>
+            <span class="return-code" (click)="reviewRecord(r.id || 0)" style="cursor:pointer">
+              {{ r.aitReferenceNo }}
+            </span>
+          </td>
+
+          <td>
+            <div class="td-name">
+              <div class="td-avatar ait-avatar">
+                <i class="bi bi-receipt"></i>
+              </div>
+              <div>
+                <span class="td-title">{{ r.taxpayerName }}</span>
+                <span class="td-sub">{{ r.taxpayerTin }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="cat-badge" [ngClass]="getSourceClass(r.sourceType)">
+              <i class="bi" [ngClass]="getSourceIcon(r.sourceType)"></i>
+              {{ getSourceLabel(r.sourceType) }}
+            </span>
+          </td>
+
+          <td>
+            <span class="code-text">{{ r.hsCode || '—' }}</span>
+          </td>
+
+          <td class="amt-cell net">
+            ৳ {{ r.calculatedAitAmount | number:'1.0-0' }}
+          </td>
+
+          <td class="date-cell">
+            {{ r.createdAt | date:'dd MMM' }}
+          </td>
+
+          <td>
+            <span class="sla-badge"
+              [class.sla-ok]="getSlaHours(r) >= 12"
+              [class.sla-warn]="getSlaHours(r) >= 0 && getSlaHours(r) < 12"
+              [class.sla-over]="getSlaHours(r) < 0">
+              <i class="bi"
+                [ngClass]="getSlaHours(r) < 0 ? 'bi-exclamation-triangle-fill' :
+                           getSlaHours(r) < 12 ? 'bi-clock-fill' : 'bi-check-circle'">
+              </i>
+              {{ getSlaDisplay(r) }}
+            </span>
+          </td>
+
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(r.status)">
+              {{ getStatusLabel(r.status) }}
+            </span>
+          </td>
+
+          <td>
+            <div class="action-btns">
+              <button class="btn-view" (click)="reviewRecord(r.id || 0)">
+                <i class="bi bi-eye-fill"></i> Review
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="getPaginatedRecords().length === 0">
+          <td colspan="10">
+            <div class="empty-state">
+              <i class="bi bi-inbox"></i>
+              <p>No records in queue.</p>
+              <small>Try adjusting filters or check back later.</small>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ── Mobile Cards ─────────────────────────────────────────────────────── -->
+  <div class="mobile-cards" style="padding:12px;" *ngIf="!isLoading">
+    <div class="mobile-card"
+      *ngFor="let r of getPaginatedRecords()"
+      [class.row-overdue]="getSlaHours(r) < 0">
+      <div class="mobile-card-header">
+        <div class="mobile-card-title">
+          <div class="mobile-avatar ait-avatar">
+            <i class="bi bi-receipt"></i>
+          </div>
+          <div>
+            <div class="mobile-name">{{ r.taxpayerName }}</div>
+            <div class="mobile-sub">{{ r.aitReferenceNo }}</div>
+          </div>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(r.status)">
+          {{ getStatusLabel(r.status) }}
+        </span>
+      </div>
+      <div class="mobile-card-body">
+        <div class="mobile-field">
+          <label>TIN</label>
+          <span>{{ r.taxpayerTin }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Source</label>
+          <span class="cat-badge" [ngClass]="getSourceClass(r.sourceType)">
+            {{ getSourceLabel(r.sourceType) }}
+          </span>
+        </div>
+        <div class="mobile-field">
+          <label>AIT Amount</label>
+          <span class="net">৳ {{ r.calculatedAitAmount | number:'1.0-0' }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>SLA</label>
+          <span class="sla-badge"
+            [class.sla-ok]="getSlaHours(r) >= 12"
+            [class.sla-warn]="getSlaHours(r) >= 0 && getSlaHours(r) < 12"
+            [class.sla-over]="getSlaHours(r) < 0">
+            {{ getSlaDisplay(r) }}
+          </span>
+        </div>
+      </div>
+      <div class="mobile-card-actions">
+        <button class="btn-view" (click)="reviewRecord(r.id || 0)">
+          <i class="bi bi-eye-fill"></i> Review
+        </button>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="getPaginatedRecords().length === 0">
+      <i class="bi bi-inbox"></i>
+      <p>No records in queue.</p>
+    </div>
+  </div>
+
+  <!-- ── Pagination ────────────────────────────────────────────────────────── -->
+  <div class="pagination-row" *ngIf="!isLoading && filteredRecords.length > 0">
+    <span class="pagination-info">
+      Showing {{ ((currentPage-1)*itemsPerPage)+1 }} to
+      {{ min(currentPage*itemsPerPage, filteredRecords.length) }}
+      of {{ filteredRecords.length }} records
+    </span>
+    <div class="pagination-controls">
+      <button class="btn-page" [disabled]="currentPage === 1" (click)="prevPage()">
+        <i class="bi bi-chevron-left"></i> Prev
+      </button>
+      <span *ngFor="let p of getPageNumbers()"
+        class="page-num"
+        [class.active]="p === currentPage"
+        (click)="goToPage(p)">
+        {{ p }}
+      </span>
+      <button class="btn-page" [disabled]="currentPage >= getTotalPages()" (click)="nextPage()">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+    <select class="filter-select"
+      (change)="itemsPerPage = +$any($event.target).value; applyFilters()">
+      <option value="10">10 per page</option>
+      <option value="20">20 per page</option>
+      <option value="50">50 per page</option>
+    </select>
+  </div>
+
+</div>

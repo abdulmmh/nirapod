@@ -1,0 +1,17 @@
+/* All section icons use the single NBR blue brand colour.
+   The purple and teal gradients are removed — they violated the unified theme. */
+.section-icon {
+  background: linear-gradient(135deg, #1a3f8f, #2a5fd6);
+}
+
+.form-input.error-input {
+  border-color: #e74c3c !important;
+}
+
+.field-error {
+  display: block;
+  font-size: 11px;
+  color: #e74c3c;
+  margin-top: 4px;
+  padding-left: 2px;
+}

@@ -1,0 +1,375 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>VAT Return Details</h4>
+    <p>Full VAT return submission with workflow actions.</p>
+  </div>
+  <div class="header-actions">
+    <button class="btn-back" (click)="onBack()">
+      <i class="bi bi-arrow-left"></i> Back
+    </button>
+    <button *canDo="'edit'" class="btn-edit-top" [disabled]="vr?.status !== 'Draft' && vr?.status !== 'Send Back'"
+      (click)="onEdit()">
+      <i class="bi bi-pencil-fill"></i> Edit
+    </button>
+  </div>
+</div>
+
+<!-- Action Success Message -->
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-border text-primary"></div>
+  <p>Loading VAT return details...</p>
+</div>
+
+<ng-container *ngIf="!isLoading && vr">
+
+  <!-- Header Card -->
+  <div class="view-header-card">
+    <div class="vr-header-left">
+      <div class="vr-icon"><i class="bi bi-arrow-repeat"></i></div>
+      <div>
+        <div class="vr-no">{{ vr.returnNo }}</div>
+        <div class="vr-name">{{ vr.businessName }}</div>
+        <div class="vr-meta">
+          <span class="period-pill">{{ vr.returnPeriod }}</span>
+          <span class="period-text">{{ vr.periodMonth }} {{ vr.periodYear }}</span>
+          <span class="status-badge" [ngClass]="getStatusClass(vr.status)">{{ vr.status }}</span>
+        </div>
+      </div>
+    </div>
+    <div class="vr-header-right">
+      <div class="vr-stat">
+        <span class="vrs-label">Net Tax Payable</span>
+        <span class="vrs-value">{{ fmt(vr.netTaxPayable) }}</span>
+      </div>
+      <div class="vr-stat">
+        <span class="vrs-label">Due Date</span>
+        <span class="vrs-value sm">{{ vr.dueDate || '—' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── WORKFLOW ACTION BAR ── -->
+  <div class="workflow-bar" *ngIf="canSubmit() || canStartReview() || canAccept() || canReject() || canSendBack()">
+    <div class="wb-title">
+      <i class="bi bi-diagram-3-fill"></i>
+      Workflow Actions
+    </div>
+    <div class="wb-actions">
+
+      <!-- TAXPAYER: Submit -->
+      <button class="wf-btn submit" *ngIf="canSubmit()" (click)="openAction('Submit')">
+        <i class="bi bi-send-fill"></i>
+        Submit Return
+      </button>
+
+      <!-- TAX_OFFICER: Start Review -->
+      <button class="wf-btn review" *ngIf="canStartReview()" (click)="openAction('Start Review')">
+        <i class="bi bi-search"></i>
+        Start Review
+      </button>
+
+      <!-- TAX_OFFICER: Send Back -->
+      <button class="wf-btn sendback" *ngIf="canSendBack()" (click)="openAction('Send Back')">
+        <i class="bi bi-arrow-return-left"></i>
+        Send Back
+      </button>
+
+      <!-- TAX_COMMISSIONER: Accept -->
+      <button class="wf-btn accept" *ngIf="canAccept()" (click)="openAction('Accept')">
+        <i class="bi bi-check-circle-fill"></i>
+        Accept Return
+      </button>
+
+      <!-- TAX_COMMISSIONER: Reject -->
+      <button class="wf-btn reject" *ngIf="canReject()" (click)="openAction('Reject')">
+        <i class="bi bi-x-circle-fill"></i>
+        Reject Return
+      </button>
+
+    </div>
+  </div>
+
+  <!-- Tax Summary Cards -->
+  <div class="tax-summary-row">
+    <div class="ts-card">
+      <div class="tsc-icon supplies"><i class="bi bi-graph-up"></i></div>
+      <div class="tsc-body">
+        <span class="tsc-label">Total Supplies</span>
+        <span class="tsc-value">{{ fmt(vr.totalSupplies) }}</span>
+      </div>
+    </div>
+    <div class="ts-card">
+      <div class="tsc-icon output"><i class="bi bi-arrow-up-circle-fill"></i></div>
+      <div class="tsc-body">
+        <span class="tsc-label">Output Tax</span>
+        <span class="tsc-value output">{{ fmt(vr.outputTax) }}</span>
+      </div>
+    </div>
+    <div class="ts-card">
+      <div class="tsc-icon input"><i class="bi bi-arrow-down-circle-fill"></i></div>
+      <div class="tsc-body">
+        <span class="tsc-label">Input Tax Credit</span>
+        <span class="tsc-value input">{{ fmt(vr.inputTax) }}</span>
+      </div>
+    </div>
+    <div class="ts-card highlight">
+      <div class="tsc-icon net"><i class="bi bi-calculator-fill"></i></div>
+      <div class="tsc-body">
+        <span class="tsc-label">Net Payable</span>
+        <span class="tsc-value net">{{ fmt(vr.netTaxPayable) }}</span>
+      </div>
+    </div>
+    <div class="ts-card">
+      <div class="tsc-icon paid"><i class="bi bi-cash-coin"></i></div>
+      <div class="tsc-body">
+        <span class="tsc-label">Tax Paid</span>
+        <span class="tsc-value paid">{{ vr.taxPaid > 0 ? fmt(vr.taxPaid) : '—' }}</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="details-grid">
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-file-earmark-text-fill"></i>
+        <span>Return Information</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Return No.</span>
+          <span class="detail-value"><span class="code-badge">{{ vr.returnNo }}</span></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Return Period</span>
+          <span class="detail-value">{{ vr.returnPeriod }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Period</span>
+          <span class="detail-value fw-bold">{{ vr.periodMonth }} {{ vr.periodYear }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Assessment Year</span>
+          <span class="detail-value">{{ vr.assessmentYear || '—' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Status</span>
+          <span class="detail-value">
+            <span class="status-badge" [ngClass]="getStatusClass(vr.status)">{{ vr.status }}</span>
+          </span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-building-fill"></i>
+        <span>Business Information</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Business Name</span>
+          <span class="detail-value fw-bold">{{ vr.businessName }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">BIN No.</span>
+          <span class="detail-value"><span class="code-badge">{{ vr.binNo }}</span></span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">TIN No.</span>
+          <span class="detail-value"><span class="code-badge">{{ vr.tinNumber }}</span></span>
+        </div>
+        <div class="detail-row" *ngIf="vr.submittedBy">
+          <span class="detail-label">Submitted By</span>
+          <span class="detail-value">{{ vr.submittedBy }}</span>
+        </div>
+        <div class="detail-row" *ngIf="vr.submissionDate">
+          <span class="detail-label">Submitted On</span>
+          <span class="detail-value">{{ vr.submissionDate }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-table"></i>
+        <span>Supply Breakdown</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Taxable Supplies</span>
+          <span class="detail-value">{{ fmt(vr.taxableSupplies) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Exempt Supplies</span>
+          <span class="detail-value">{{ fmt(vr.exemptSupplies) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Zero Rated Supplies</span>
+          <span class="detail-value">{{ fmt(vr.zeroRatedSupplies) }}</span>
+        </div>
+        <div class="detail-row total-row">
+          <span class="detail-label detail-label-strong">Total Supplies</span>
+          <span class="detail-value fw-bold">{{ fmt(vr.totalSupplies) }}</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="detail-card">
+      <div class="detail-card-header">
+        <i class="bi bi-cash-stack"></i>
+        <span>Tax Summary & Filing</span>
+      </div>
+      <div class="detail-body">
+        <div class="detail-row">
+          <span class="detail-label">Output Tax</span>
+          <span class="detail-value tax-output">{{ fmt(vr.outputTax) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Input Tax Credit</span>
+          <span class="detail-value tax-input">{{ fmt(vr.inputTax) }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Tax Paid</span>
+          <span class="detail-value">{{ vr.taxPaid > 0 ? fmt(vr.taxPaid) : '—' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Due Date</span>
+          <span class="detail-value">{{ vr.dueDate || '—' }}</span>
+        </div>
+        <div class="detail-row">
+          <span class="detail-label">Net Tax Payable</span>
+          <span class="detail-value net-payable">{{ fmt(vr.netTaxPayable) }}</span>
+        </div>
+        <div class="detail-row" *ngIf="vr.remarks">
+          <span class="detail-label">Remarks</span>
+          <span class="detail-value detail-value-note">{{ vr.remarks }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="timeline-card">
+    <div class="tc-header">
+      <i class="bi bi-clock-history"></i>
+      <span>Action History</span>
+      <span class="tc-count">{{ vr.actionHistory?.length || 0 }} actions</span>
+    </div>
+
+    <div class="timeline" *ngIf="vr.actionHistory && vr.actionHistory.length > 0">
+      <div class="tl-item" *ngFor="let a of vr.actionHistory; let last = last" [class.last]="last">
+        <div class="tl-dot" [ngClass]="getActionColor(a.toStatus)">
+          <i [class]="getActionIcon(a.action)"></i>
+        </div>
+        <div class="tl-body">
+          <div class="tl-action">{{ a.action }}</div>
+          <div class="tl-status">
+            <span class="tl-from">{{ a.fromStatus }}</span>
+            <i class="bi bi-arrow-right tl-arrow"></i>
+            <span class="tl-to" [ngClass]="getStatusClass(a.toStatus)">{{ a.toStatus }}</span>
+          </div>
+          <div class="tl-meta">
+            <span class="tl-user"><i class="bi bi-person-fill"></i> {{ a.performedBy }}</span>
+            <span class="tl-role">{{ a.role }}</span>
+          </div>
+          <div class="tl-remarks" *ngIf="a.remarks">
+            <i class="bi bi-chat-left-text-fill"></i> {{ a.remarks }}
+          </div>
+          <div class="tl-time">{{ a.timestamp }}</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="no-history" *ngIf="!vr.actionHistory || vr.actionHistory.length === 0">
+      <i class="bi bi-clock"></i>
+      <p>No action history yet</p>
+    </div>
+  </div>
+
+</ng-container>
+
+<!-- ── ACTION MODAL ── -->
+<div class="modal-overlay" *ngIf="showActionModal" (click)="closeModal()">
+  <div class="action-modal" (click)="$event.stopPropagation()">
+
+    <div class="am-header" [ngClass]="'am-' + currentAction.toLowerCase().replace(' ','-')">
+      <div class="am-icon">
+        <i [class]="
+          currentAction === 'Submit'       ? 'bi bi-send-fill'           :
+          currentAction === 'Start Review' ? 'bi bi-search'              :
+          currentAction === 'Accept'       ? 'bi bi-check-circle-fill'   :
+          currentAction === 'Reject'       ? 'bi bi-x-circle-fill'       :
+                                             'bi bi-arrow-return-left'
+        "></i>
+      </div>
+      <div>
+        <div class="am-title">{{ currentAction }} Return</div>
+        <div class="am-sub">{{ vr?.returnNo }} — {{ vr?.businessName }}</div>
+      </div>
+    </div>
+
+    <div class="am-body">
+
+      <div class="am-info">
+        <div class="am-info-row">
+          <span>Current Status</span>
+          <span class="status-badge" [ngClass]="getStatusClass(vr?.status || '')">{{ vr?.status }}</span>
+        </div>
+        <div class="am-info-row">
+          <span>New Status</span>
+          <span class="status-badge" [ngClass]="getStatusClass(
+            currentAction === 'Submit'       ? 'Submitted'    :
+            currentAction === 'Start Review' ? 'Under Review' :
+            currentAction === 'Accept'       ? 'Accepted'     :
+            currentAction === 'Reject'       ? 'Rejected'     : 'Send Back'
+          )">
+            {{
+            currentAction === 'Submit' ? 'Submitted' :
+            currentAction === 'Start Review' ? 'Under Review' :
+            currentAction === 'Accept' ? 'Accepted' :
+            currentAction === 'Reject' ? 'Rejected' : 'Send Back'
+            }}
+          </span>
+        </div>
+      </div>
+
+      <div class="am-remarks-wrap">
+        <label class="am-label">
+          Remarks
+          <span class="required-star" *ngIf="currentAction === 'Reject' || currentAction === 'Send Back'">
+            * Required
+          </span>
+        </label>
+        <textarea class="am-remarks" [placeholder]="
+            currentAction === 'Accept'       ? 'Optional remarks...'                            :
+            currentAction === 'Reject'       ? 'Required — reason for rejection...'             :
+            currentAction === 'Send Back'    ? 'Required — what needs to be corrected...'       :
+            currentAction === 'Start Review' ? 'Optional — any initial observations...'         :
+                                               'Optional remarks...'
+          " [(ngModel)]="actionRemarks" rows="3">
+        </textarea>
+        <div class="am-error" *ngIf="actionError">
+          <i class="bi bi-exclamation-triangle-fill"></i> {{ actionError }}
+        </div>
+      </div>
+
+    </div>
+
+    <div class="am-footer">
+      <button class="am-btn-cancel" (click)="closeModal()" [disabled]="isActing">
+        Cancel
+      </button>
+      <button class="am-btn-confirm" [ngClass]="'am-confirm-' + currentAction.toLowerCase().replace(' ','-')"
+        (click)="confirmAction()" [disabled]="isActing">
+        <span *ngIf="!isActing">
+          <i class="bi bi-check-lg"></i> Confirm {{ currentAction }}
+        </span>
+        <span *ngIf="isActing">
+          <span class="spinner-border spinner-border-sm me-2"></span>
+          Processing...
+        </span>
+      </button>
+    </div>
+
+  </div>
+</div>

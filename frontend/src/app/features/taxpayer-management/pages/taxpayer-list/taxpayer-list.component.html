@@ -1,0 +1,465 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>Taxpayer List</h4>
+    <p>Manage all registered taxpayers from here.</p>
+  </div>
+
+  <a *canDo="'create'" routerLink="/taxpayers/create" class="btn-add-primary desktop-add-btn">
+    <i class="bi bi-plus-lg"></i> Add Taxpayer
+  </a>
+</div>
+
+<!-- KPI Summary Cards -->
+<div class="kpi-cards-row" *ngIf="!isLoading">
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('PENDING_REVIEW')"
+       (click)="onKpiCardClick('PENDING_REVIEW')">
+    <div class="kpi-icon kpi-icon-pending"><i class="bi bi-hourglass-split"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Pending Review</span>
+      <span class="kpi-value">{{ kpiPending }}</span>
+    </div>
+  </div>
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('APPROVED')"
+       (click)="onKpiCardClick('APPROVED')">
+    <div class="kpi-icon kpi-icon-approved"><i class="bi bi-check-circle-fill"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Approved</span>
+      <span class="kpi-value">{{ kpiApproved }}</span>
+    </div>
+  </div>
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('REJECTED')"
+       (click)="onKpiCardClick('REJECTED')">
+    <div class="kpi-icon kpi-icon-rejected"><i class="bi bi-x-circle-fill"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Rejected</span>
+      <span class="kpi-value">{{ kpiRejected }}</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon kpi-icon-total"><i class="bi bi-people-fill"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Active Taxpayers</span>
+      <span class="kpi-value">{{ kpiActive }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <div class="list-search-bar">
+    <div class="search-field-row">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <input
+          type="text"
+          placeholder="Search by name, TIN, email, phone..."
+          [(ngModel)]="searchTerm"
+          (ngModelChange)="onFilterChange()"
+        />
+      </div>
+      <button *canDo="'export'" class="btn btn-export" (click)="onExport()" [disabled]="isExporting">
+        <i class="bi" [ngClass]="isExporting ? 'bi-hourglass-split spin' : 'bi-file-earmark-excel'"></i> 
+        {{ isExporting ? 'Exporting...' : 'Export to CSV' }}
+      </button>
+    </div>
+
+    <div class="filter-row">
+      <select class="filter-select" [class.active-filter]="!!typeFilter"
+        [(ngModel)]="typeFilter" (ngModelChange)="onFilterChange()">
+        <option value="">All Types</option>
+        <option *ngFor="let t of typeOptions" [value]="t">{{ t }}</option>
+      </select>
+
+      <button class="btn-clear-filters" *ngIf="hasActiveFilters()" (click)="clearFilters()">
+        <i class="bi bi-x-circle"></i> Clear
+      </button>
+    </div>
+  </div>
+
+  <div class="table-responsive desktop-table">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>TIN</th>
+          <th>Name</th>
+          <th>Email</th>
+          <th>Phone</th>
+          <th>Type</th>
+          <th>Status</th>
+          <th>Approval</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let tp of paginatedTaxpayers; let i = index">
+          <td>{{ pageRangeStart + i }}</td>
+          <td>
+            <span class="tin-code" [ngStyle]="{'background': !tp.tinNumber ? '#f5f7fb' : '', 'color': !tp.tinNumber ? '#888' : ''}">
+              {{ tp.tinNumber || 'Not Assigned' }}
+            </span>
+          </td>
+          <td>
+            <div class="td-name">
+              <img *ngIf="tp.photoPath" 
+                  [src]="getPhotoUrl(tp.photoPath)" 
+                  class="td-avatar-img"
+                  alt="photo"/>
+              <div class="td-avatar" *ngIf="!tp.photoPath">
+                {{ getDisplayName(tp).charAt(0) | uppercase }}
+              </div>
+              <span>{{ getDisplayName(tp) }}</span>
+            </div>
+          </td>
+          <td>{{ tp.email }}</td>
+          <td>{{ tp.phone }}</td>
+          <td>{{ tp.taxpayerType.typeName }}</td>
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(tp.status)">
+              {{ tp.status }}
+            </span>
+          </td>
+          <td>
+            <span class="approval-badge" [ngClass]="{
+              'approval-pending':  tp.approvalStatus === 'PENDING_REVIEW',
+              'approval-approved': tp.approvalStatus === 'APPROVED',
+              'approval-rejected': tp.approvalStatus === 'REJECTED'
+            }">
+              {{ tp.approvalStatus === 'PENDING_REVIEW' ? 'Pending' : 
+                tp.approvalStatus === 'APPROVED' ? 'Approved' : 
+                tp.approvalStatus === 'REJECTED' ? 'Rejected' : '—' }}
+            </span>
+          </td>
+          <td>
+            <div class="action-btns">
+              <button class="btn-view" (click)="viewTaxpayers(tp.id)">
+                <i class="bi bi-eye-fill"></i> View
+              </button>
+
+              <button *canDo="'edit'" class="btn-edit" (click)="editTaxpayers(tp.id)">
+                <i class="bi bi-pencil-fill"></i> Edit
+              </button>
+
+              <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete" (click)="confirmDelete(tp.id)">
+                <i class="bi bi-trash-fill"></i> 
+              </button>
+              <ng-container *ngIf="tp.approvalStatus === 'PENDING_REVIEW'">
+                <button 
+                  *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER', 'TAX_OFFICER']"
+                  class="btn-approve" 
+                  (click)="openApprove(tp.id)">
+                  <i class="bi bi-check-circle-fill"></i> Approve
+                </button>
+                <button 
+                  *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER', 'TAX_OFFICER']"
+                  class="btn-reject" 
+                  (click)="openReject(tp.id)">
+                  <i class="bi bi-x-circle-fill"></i> Reject
+                </button>
+              </ng-container>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="!isLoading && filteredTaxpayers.length > 0">
+    <span class="pagination-info">
+      Showing {{ pageRangeStart }}–{{ pageRangeEnd }} of {{ filteredTaxpayers.length }}
+    </span>
+    <div class="pagination-controls">
+      <button class="btn-page-nav" (click)="goToPrevPage()" [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i> Prev
+      </button>
+      <span class="pagination-page-tag">{{ currentPage }}</span>
+      <button class="btn-page-nav" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+    <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }} / page</option>
+    </select>
+  </div>
+
+  <div class="mobile-cards">
+    <div class="mobile-card" *ngFor="let tp of paginatedTaxpayers">
+      
+      <div class="mobile-card-header">
+        <div class="mobile-card-title">
+          <div class="mobile-avatar">{{ getDisplayName(tp).charAt(0) | uppercase }}</div>
+          <div>
+            <div class="mobile-name">{{ getDisplayName(tp) }}</div>
+            <div class="mobile-sub" [ngStyle]="{'color': !tp.tinNumber ? '#888' : ''}">
+              {{ tp.tinNumber || 'Not Assigned' }}
+            </div>
+          </div>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(tp.status)">
+          {{ tp.status }}
+        </span>
+      </div>
+
+      <div class="mobile-card-body">
+        <div class="mobile-field">
+          <label>Email</label>
+          <span>{{ tp.email }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Phone</label>
+          <span>{{ tp.phone }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Type</label>
+          <span>{{ tp.taxpayerType.typeName }}</span>
+        </div>
+      </div>
+
+      <div class="mobile-card-actions">
+        <button class="btn-view" (click)="viewTaxpayers(tp.id)">
+          <i class="bi bi-eye-fill"></i> View
+        </button>
+        <button *canDo="'edit'" class="btn-edit" (click)="editTaxpayers(tp.id)">
+          <i class="bi bi-pencil-fill"></i> Edit
+        </button>
+        <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete" (click)="confirmDelete(tp.id)">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="filteredTaxpayers.length === 0">
+      <i class="bi bi-people"></i>
+      <p>No taxpayers found.</p>
+    </div>
+  </div>
+
+</div>
+
+<button *canDo="'create'" class="fab-btn" routerLink="/taxpayers/create" title="Add Taxpayer">
+  <i class="bi bi-plus-lg"></i>
+</button>
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card">
+    <div class="modal-accent error"></div>
+    <div class="modal-icon-wrap error">
+      <i class="bi bi-trash-fill" style="color:#A32D2D; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Delete Taxpayer?</p>
+    <p class="modal-msg">
+      This action cannot be undone. Are you sure you want to delete this taxpayer record?
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-modal-confirm error" (click)="confirmDeleteExecute()">
+        <i class="bi bi-trash-fill"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Approve Modal -->
+<div class="modal-overlay" *ngIf="showApproveModal">
+  <div class="modal-card" style="max-width: 480px;">
+    <div class="modal-accent success"></div>
+    <div class="modal-icon-wrap success">
+      <i class="bi bi-check-circle-fill" 
+         style="color:#1a7a4a; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Approve Application</p>
+
+    <!-- Address missing warning -->
+    <ng-container *ngIf="!selectedTaxpayerHasAddress()">
+      <div class="address-missing-warn">
+        <i class="bi bi-exclamation-triangle-fill"></i>
+        <div>
+          <strong>Profile Incomplete</strong>
+          <p>This taxpayer has not provided their address. 
+             Approval requires Division and District.</p>
+        </div>
+      </div>
+
+      <p class="modal-msg">
+        A notice will be sent to the taxpayer requesting 
+        them to complete their profile before approval.
+      </p>
+
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" (click)="closeApprove()">
+          Cancel
+        </button>
+        <button class="btn-modal-confirm warning"
+                (click)="confirmApprove()"
+                [disabled]="isProcessing">
+          <i class="bi bi-bell-fill"></i>
+          {{ isProcessing ? 'Sending...' : 'Send Notice & Close' }}
+        </button>
+      </div>
+    </ng-container>
+
+    <!-- Normal approval — address exists -->
+    <ng-container *ngIf="selectedTaxpayerHasAddress()">
+      <!-- Address info -->
+      <div class="taxpayer-address-info">
+        <div class="tai-label">Taxpayer's Registered Address</div>
+        <div class="tai-row">
+          <span class="tai-key">Division</span>
+          <span class="tai-val">
+            {{ selectedTaxpayerForApproval?.presentAddress?.division }}
+          </span>
+        </div>
+        <div class="tai-row">
+          <span class="tai-key">District</span>
+          <span class="tai-val">
+            {{ selectedTaxpayerForApproval?.presentAddress?.district }}
+          </span>
+        </div>
+      </div>
+
+      <p class="modal-msg">
+        Assign Tax Zone and Circle based on taxpayer's district.
+      </p>
+
+      <div class="modal-form">
+        <div class="modal-field">
+          <label>Tax Zone *</label>
+          <select [(ngModel)]="approveZone"
+                  (ngModelChange)="onApproveZoneChange()"
+                  [disabled]="taxZones.length === 0 || loadingZones">
+            <option value="">
+              {{ loadingZones ? 'Loading...' : 
+                 taxZones.length === 0 ? 'No zones found' : 'Select Tax Zone' }}
+            </option>
+            <option *ngFor="let z of taxZones" [value]="z.name">
+              {{ z.name }}
+            </option>
+          </select>
+        </div>
+
+        <div class="modal-field">
+          <label>Tax Circle *</label>
+          <select [(ngModel)]="approveCircle"
+                  [disabled]="taxCircles.length === 0 || loadingCircles">
+            <option value="">
+              {{ loadingCircles ? 'Loading...' :
+                 taxCircles.length === 0 ? 'Select zone first' : 'Select Tax Circle' }}
+            </option>
+            <option *ngFor="let c of taxCircles" [value]="c.name">
+              {{ c.name }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div class="modal-actions">
+        <button class="btn-modal-cancel" (click)="closeApprove()">
+          Cancel
+        </button>
+        <button class="btn-modal-confirm success"
+                (click)="confirmApprove()"
+                [disabled]="isProcessing || !approveZone || !approveCircle">
+          <i class="bi bi-check-circle-fill"></i>
+          {{ isProcessing ? 'Processing...' : 'Approve & Issue TIN' }}
+        </button>
+      </div>
+    </ng-container>
+
+  </div>
+</div>
+
+<!-- Reject Modal -->
+<div class="modal-overlay" *ngIf="showRejectModal">
+  <div class="modal-card">
+    <div class="modal-accent error"></div>
+    <div class="modal-icon-wrap error">
+      <i class="bi bi-x-circle-fill" style="color:#A32D2D; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Reject Application</p>
+    <p class="modal-msg">Please provide a reason for rejection.</p>
+
+    <div class="modal-form">
+      <div class="modal-field">
+        <label>Rejection Reason *</label>
+        <textarea [(ngModel)]="rejectNotes" 
+                  rows="3"
+                  placeholder="e.g. NID verification failed..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="closeReject()">Cancel</button>
+      <button class="btn-modal-confirm error" 
+              (click)="confirmReject()"
+              [disabled]="isProcessing">
+        <i class="bi bi-x-circle-fill"></i>
+        {{ isProcessing ? 'Processing...' : 'Reject Application' }}
+      </button>
+      <button class="btn-modal-notice"
+              (click)="closeReject(); openNoticeModal(pendingApprovalId ?? undefined)">
+        <i class="bi bi-bell-fill"></i> Notice
+      </button>
+    </div>
+  </div>
+</div>
+
+
+<!-- Notice Modal -->
+<div class="modal-overlay" *ngIf="showNoticeModal">
+  <div class="modal-card" style="max-width:500px;">
+    <div class="modal-accent" style="background:#1a3f8f;"></div>
+    <div class="modal-icon-wrap" style="background:#e8eeff;">
+      <i class="bi bi-bell-fill" style="color:#1a3f8f; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Send Notice to Taxpayer</p>
+
+    <div class="modal-form">
+      <div class="modal-field">
+        <label>Notice Type</label>
+        <select [(ngModel)]="noticeType">
+          <option>General</option>
+          <option>Tax Due</option>
+          <option>Audit Notice</option>
+          <option>Compliance</option>
+          <option>Reminder</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Priority</label>
+        <select [(ngModel)]="noticePriority">
+          <option>Low</option>
+          <option>Normal</option>
+          <option>High</option>
+          <option>Urgent</option>
+        </select>
+      </div>
+      <div class="modal-field">
+        <label>Subject *</label>
+        <input type="text" [(ngModel)]="noticeSubject"
+               placeholder="Enter notice subject"/>
+      </div>
+      <div class="modal-field">
+        <label>Message *</label>
+        <textarea [(ngModel)]="noticeBody" rows="4"
+                  placeholder="Enter notice message..."></textarea>
+      </div>
+    </div>
+
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="closeNoticeModal()">Cancel</button>
+      <button class="btn-modal-confirm"
+              style="background:#1a3f8f;"
+              (click)="confirmSendNotice()"
+              [disabled]="isSendingNotice">
+        <i class="bi bi-send-fill"></i>
+        {{ isSendingNotice ? 'Sending...' : 'Send Notice' }}
+      </button>
+    </div>
+  </div>
+</div>

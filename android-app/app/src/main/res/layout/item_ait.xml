@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_margin="8dp"
+    app:cardCornerRadius="16dp"
+    app:cardElevation="3dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="20dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
+
+            <TextView
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:background="@drawable/avatar_circle_bg"
+                android:backgroundTint="#EDE9FE"
+                android:gravity="center"
+                android:text="📄"
+                android:textSize="18sp" />
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="12dp"
+                android:layout_weight="1"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/tv_taxpayer_name"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_primary"
+                    android:textSize="15sp"
+                    android:textStyle="bold"
+                    tools:text="Tasrif Zaman" />
+
+                <TextView
+                    android:id="@+id/tv_ref_no"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="@color/text_secondary"
+                    android:textSize="12sp"
+                    android:fontFamily="monospace"
+                    tools:text="AIT-202526-BB07CE18" />
+            </LinearLayout>
+
+            <TextView
+                android:id="@+id/tv_status"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/badge_bg"
+                android:paddingHorizontal="10dp"
+                android:paddingVertical="4dp"
+                android:textColor="@color/white"
+                android:textSize="10sp"
+                android:textStyle="bold"
+                tools:text="Credited to ITR" />
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#F3F4F6"
+            android:layout_marginVertical="16dp" />
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:stretchColumns="1">
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="TIN" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_tin" android:gravity="end" android:textColor="@color/text_primary" android:textSize="13sp" android:textStyle="bold" tools:text="TIN-0000000005" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="SOURCE" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_source" android:layout_gravity="end" android:background="#E8EEF9" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textColor="#1A3F8F" android:textSize="11sp" android:textStyle="bold" tools:text="Supplier Payment" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="FISCAL YEAR" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_year" android:gravity="end" android:textColor="@color/text_primary" android:textSize="13sp" tools:text="2025-26" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="TAXABLE VALUE" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_taxable_value" android:gravity="end" android:textColor="@color/text_primary" android:textSize="13sp" tools:text="৳100,000.00" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="AIT AMOUNT" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_ait_amount" android:gravity="end" android:textColor="@color/primary" android:textSize="14sp" android:textStyle="bold" tools:text="৳5,000.00" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="CHALLAN" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_challan" android:gravity="end" android:textColor="#16A34A" android:textSize="13sp" android:textStyle="bold" tools:text="✔ CH-2026-08271" />
+            </TableRow>
+
+            <TableRow android:paddingVertical="4dp">
+                <TextView android:text="DATE" android:textColor="@color/text_secondary" android:textSize="12sp" />
+                <TextView android:id="@+id/tv_date" android:gravity="end" android:textColor="@color/text_primary" android:textSize="13sp" tools:text="15 Jun 2026" />
+            </TableRow>
+        </TableLayout>
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btn_view"
+            style="@style/Widget.MaterialComponents.Button.OutlinedButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="View"
+            android:textAllCaps="false"
+            app:icon="@drawable/ic_eye"
+            app:iconGravity="textStart"
+            app:iconSize="16dp"
+            app:cornerRadius="10dp"/>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

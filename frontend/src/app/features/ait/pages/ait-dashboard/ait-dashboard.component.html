@@ -1,0 +1,266 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>Advance Income Tax (AIT)</h4>
+    <p>Manage and track all AIT submissions and credits.</p>
+  </div>
+  <a *canDo="'create'" (click)="navigateToCreate()" class="btn-add-primary desktop-add-btn">
+    <i class="bi bi-plus-lg"></i> New AIT Record
+  </a>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Status Filter Tabs -->
+  <div class="status-tabs">
+    <button class="stab" [class.active]="filterStatus === ''" (click)="setFilter('')">
+      All <span class="stab-count">{{ countByStatus('') }}</span>
+    </button>
+    <button class="stab draft" [class.active]="filterStatus === 'DRAFT'" (click)="setFilter('DRAFT')">
+      Draft <span class="stab-count">{{ countByStatus('DRAFT') }}</span>
+    </button>
+    <button class="stab submitted" [class.active]="filterStatus === 'SUBMITTED'" (click)="setFilter('SUBMITTED')">
+      Submitted <span class="stab-count">{{ countByStatus('SUBMITTED') }}</span>
+    </button>
+    <button class="stab pending" [class.active]="filterStatus === 'PENDING'" (click)="setFilter('PENDING')">
+      Pending <span class="stab-count">{{ countByStatus('PENDING') }}</span>
+    </button>
+    <button class="stab review" [class.active]="filterStatus === 'UNDER_REVIEW'" (click)="setFilter('UNDER_REVIEW')">
+      Under Review <span class="stab-count">{{ countByStatus('UNDER_REVIEW') }}</span>
+    </button>
+    <button class="stab approved" [class.active]="filterStatus === 'APPROVED'" (click)="setFilter('APPROVED')">
+      Approved <span class="stab-count">{{ countByStatus('APPROVED') }}</span>
+    </button>
+    <button class="stab rejected" [class.active]="filterStatus === 'REJECTED'" (click)="setFilter('REJECTED')">
+      Rejected <span class="stab-count">{{ countByStatus('REJECTED') }}</span>
+    </button>
+    <button class="stab credited" [class.active]="filterStatus === 'CREDITED'" (click)="setFilter('CREDITED')">
+      Credited <span class="stab-count">{{ countByStatus('CREDITED') }}</span>
+    </button>
+  </div>
+
+  <!-- Search Bar -->
+  <div class="list-search-bar">
+    <div class="search-field-row">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Search by reference no, TIN, taxpayer, source type..."
+          [formControl]="searchControl" />
+      </div>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="isLoading">
+    <div class="spinner-border spinner-border-sm" style="color:#7c3aed"></div>
+    <span>Loading AIT records...</span>
+  </div>
+
+  <!-- Desktop Table -->
+  <div class="table-responsive desktop-table" *ngIf="!isLoading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Reference No</th>
+          <th>Taxpayer</th>
+          <th>Source Type</th>
+          <th>Fiscal Year</th>
+          <th>Taxable Value</th>
+          <th>AIT Rate</th>
+          <th>AIT Amount</th>
+          <th>Challan</th>
+          <th>Status</th>
+          <th>Date</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of filtered; let i = index">
+          <td>{{ i + 1 }}</td>
+
+          <td>
+            <span class="return-code">{{ r.aitReferenceNo }}</span>
+          </td>
+
+          <td>
+            <div class="td-name">
+              <div class="td-avatar ait-avatar">
+                <i class="bi bi-receipt"></i>
+              </div>
+              <div>
+                <span class="td-title">{{ r.taxpayerName }}</span>
+                <span class="td-sub">{{ r.taxpayerTin }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="cat-badge" [ngClass]="getSourceClass(r.sourceType)">
+              <i class="bi" [ngClass]="getSourceIcon(r.sourceType)"></i>
+              {{ getSourceLabel(r.sourceType) }}
+            </span>
+          </td>
+
+          <td>
+            <span class="year-badge">{{ r.fiscalYearName || '—' }}</span>
+          </td>
+
+          <td class="amt-cell">{{ formatCurrency(r.taxableValue) }}</td>
+          <td class="amt-cell">{{ r.aitRate }}%</td>
+          <td class="amt-cell net">{{ formatCurrency(r.calculatedAitAmount) }}</td>
+
+          <td>
+            <span *ngIf="r.challanVerified" class="challan-verified">
+              <i class="bi bi-patch-check-fill"></i> Verified
+            </span>
+            <span *ngIf="!r.challanVerified && r.challanNumber" class="challan-pending">
+              <i class="bi bi-clock"></i> Pending
+            </span>
+            <span *ngIf="!r.challanNumber" class="text-muted">—</span>
+          </td>
+
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(r.status)">
+              {{ getStatusLabel(r.status) }}
+            </span>
+          </td>
+
+          <td>{{ r.createdAt | date:'dd MMM yyyy' }}</td>
+
+          <td>
+            <div class="action-btns">
+              <button class="btn-view" (click)="view(r.id!)">
+                <i class="bi bi-eye-fill"></i> View
+              </button>
+              <button *canDo="'edit'" class="btn-edit" [disabled]="r.status !== 'DRAFT'" (click)="edit(r.id!)">
+                <i class="bi bi-pencil-fill"></i> Edit
+              </button>
+              <!-- Taxpayer: resubmit after rejection -->
+              <button *ngIf="r.status === 'REJECTED' && isTaxpayerRole" class="btn-amend" (click)="onResubmit(r.id!)">
+                <i class="bi bi-arrow-repeat"></i> Correct
+              </button>
+              <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete"
+                [disabled]="r.status !== 'DRAFT' && r.status !== 'REJECTED'" (click)="confirmDelete(r.id!)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+              <button *ngIf="r.status === 'CREDITED'" class="btn-cert" (click)="downloadCertificate(r.id!)"
+                title="Download AIT Certificate">
+                <i class="bi bi-file-earmark-arrow-down-fill"></i> Cert
+              </button>
+
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="filtered.length === 0">
+          <td colspan="12">
+            <div class="empty-state">
+              <i class="bi bi-receipt"></i>
+              <p>No AIT records found.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="mobile-cards" style="padding:12px;" *ngIf="!isLoading">
+    <div class="mobile-card" *ngFor="let r of filtered">
+      <div class="mobile-card-header">
+        <div class="mobile-card-title">
+          <div class="mobile-avatar ait-avatar">
+            <i class="bi bi-receipt"></i>
+          </div>
+          <div>
+            <div class="mobile-name">{{ r.taxpayerName }}</div>
+            <div class="mobile-sub">{{ r.aitReferenceNo }}</div>
+          </div>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(r.status)">
+          {{ getStatusLabel(r.status) }}
+        </span>
+      </div>
+      <div class="mobile-card-body">
+        <div class="mobile-field">
+          <label>TIN</label>
+          <span>{{ r.taxpayerTin }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Source</label>
+          <span class="cat-badge" [ngClass]="getSourceClass(r.sourceType)">
+            {{ getSourceLabel(r.sourceType) }}
+          </span>
+        </div>
+        <div class="mobile-field">
+          <label>Fiscal Year</label>
+          <span>{{ r.fiscalYearName || '—' }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Taxable Value</label>
+          <span>{{ formatCurrency(r.taxableValue) }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>AIT Amount</label>
+          <span class="net">{{ formatCurrency(r.calculatedAitAmount) }}</span>
+        </div>
+        <div class="mobile-field" *ngIf="r.challanNumber">
+          <label>Challan</label>
+          <span *ngIf="r.challanVerified" class="challan-verified">
+            <i class="bi bi-patch-check-fill"></i> {{ r.challanNumber }}
+          </span>
+          <span *ngIf="!r.challanVerified" class="challan-pending">{{ r.challanNumber }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Date</label>
+          <span>{{ r.createdAt | date:'dd MMM yyyy' }}</span>
+        </div>
+      </div>
+      <div class="mobile-card-actions">
+        <button class="btn-view" (click)="view(r.id!)">
+          <i class="bi bi-eye-fill"></i> View
+        </button>
+        <button *ngIf="r.status === 'DRAFT'" class="btn-edit" (click)="edit(r.id!)">
+          <i class="bi bi-pencil-fill"></i> <span *canDo="'edit'">Edit</span>
+        </button>
+        <button *ngIf="r.status === 'REJECTED' && isTaxpayerRole" class="btn-amend" (click)="onResubmit(r.id!)">
+          <i class="bi bi-arrow-repeat"></i> Correct
+        </button>
+        <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete"
+          [disabled]="r.status !== 'DRAFT' && r.status !== 'REJECTED'" (click)="confirmDelete(r.id!)">
+          <i class="bi bi-trash-fill"></i>
+        </button>
+      </div>
+    </div>
+    <div class="empty-state" *ngIf="filtered.length === 0">
+      <i class="bi bi-receipt"></i>
+      <p>No AIT records found.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button class="fab-btn" (click)="navigateToCreate()" *canDo="'create'">
+  <i class="bi bi-plus-lg"></i>
+</button>
+
+<!-- Delete Confirmation Modal -->
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card">
+    <div class="modal-accent error"></div>
+    <div class="modal-icon-wrap error">
+      <i class="bi bi-trash-fill" style="color:#A32D2D; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Delete AIT Record?</p>
+    <p class="modal-msg">
+      This action cannot be undone. The record will be permanently removed.
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-modal-confirm error" (click)="executeDelete()">
+        <i class="bi bi-trash-fill"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>

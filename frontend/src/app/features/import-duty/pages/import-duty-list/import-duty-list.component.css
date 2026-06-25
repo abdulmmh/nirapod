@@ -1,0 +1,66 @@
+.duty-ref {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a3f8f;
+  background: #e8eef9;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.goods-name {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2340;
+}
+.hs-badge {
+  display: inline-block;
+  font-size: 10px;
+  font-weight: 700;
+  background: #e8eef9;
+  color: #1a3f8f;
+  padding: 1px 6px;
+  border-radius: 4px;
+  font-family: monospace;
+  margin-top: 2px;
+}
+.country-badge {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+}
+.port-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f0f4f8;
+  color: #555;
+  padding: 3px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+
+/* Rate */
+.rate-pill {
+  font-size: 12px;
+  font-weight: 800;
+  background: #e8eef9;
+  color: #1a3f8f;
+  padding: 3px 9px;
+  border-radius: 6px;
+}
+
+/* Amounts */
+.duty {
+  color: #e74c3c;
+  font-weight: 700;
+}
+.total {
+  color: #1a3f8f;
+  font-weight: 700;
+}
+
+.data-table {
+  min-width: 1600px;
+}

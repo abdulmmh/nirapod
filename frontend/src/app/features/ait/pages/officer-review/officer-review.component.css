@@ -1,0 +1,201 @@
+/* officer-review.component.css
+   FIXED: Removed all Tabler icon references.
+   Uses Bootstrap Icons only, consistent with project design system.
+*/
+
+/* ── Workflow tracker ────────────────────────────────────────────────────── */
+.workflow-tracker {
+  display: flex;
+  align-items: center;
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  padding: 16px 24px;
+  margin-bottom: 20px;
+  box-shadow: 0 1px 2px rgba(0,0,0,.05);
+  overflow-x: auto;
+}
+.wf-step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  min-width: 80px;
+}
+.wf-dot {
+  width: 34px; height: 34px; border-radius: 50%;
+  background: #f3f4f6; color: #9ca3af;
+  border: 2px solid #e5e7eb;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 13px; transition: all 0.2s;
+}
+.wf-label { font-size: 11px; color: #9ca3af; text-align: center; line-height: 1.3; }
+.wf-step.done   .wf-dot  { background: #16a34a; color: #fff; border-color: #16a34a; }
+.wf-step.done   .wf-label { color: #16a34a; font-weight: 600; }
+.wf-step.active .wf-dot  { background: #4f46e5; color: #fff; border-color: #4f46e5; }
+.wf-step.active .wf-label { color: #4f46e5; font-weight: 700; }
+.wf-step.rejected .wf-dot  { background: #dc2626; color: #fff; border-color: #dc2626; }
+.wf-line {
+  flex: 1; height: 2px; background: #e5e7eb; margin: 0 8px;
+  margin-bottom: 18px; transition: background 0.3s;
+}
+.wf-line.done { background: #16a34a; }
+
+/* ── Two-column layout ───────────────────────────────────────────────────── */
+.review-layout {
+  display: grid;
+  grid-template-columns: 1fr 380px;
+  gap: 20px;
+  align-items: start;
+}
+@media (max-width: 900px) {
+  .review-layout { grid-template-columns: 1fr; }
+}
+
+/* ── Form card (consistent with project) ────────────────────────────────── */
+.form-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 14px;
+  margin-bottom: 16px;
+  box-shadow: 0 1px 3px rgba(0,0,0,.05);
+  overflow: hidden;
+}
+.section-header {
+  display: flex; align-items: center; gap: 12px;
+  padding: 14px 20px;
+  border-bottom: 1px solid #e5e7eb;
+  background: #f9fafb;
+}
+.section-icon {
+  width: 32px; height: 32px; border-radius: 8px;
+  background: #ede9fe; color: #5b21b6;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px;
+}
+.section-title { font-size: 13px; font-weight: 700; color: #111827; }
+.section-sub   { font-size: 11px; color: #6b7280; }
+.card-p { padding: 16px 20px; }
+
+/* ── Detail grid ─────────────────────────────────────────────────────────── */
+.detail-grid  { display:flex; flex-direction:column; padding:0 20px 16px; }
+.detail-row {
+  display: flex; justify-content: space-between; align-items: center;
+  padding: 9px 0; border-bottom: 1px solid #f3f4f6;
+}
+.detail-row:last-child { border-bottom: none; }
+.detail-row.highlight { background: #f5f3ff; padding: 9px 12px; margin: 0 -0px; border-radius: 8px; }
+.detail-label  { font-size: 12px; color: #6b7280; }
+.detail-val    { font-size: 13px; font-weight: 600; color: #111827; }
+.detail-mono   { font-family: monospace; font-size: 12px; }
+.detail-amount { color: #4f46e5; font-size: 15px; font-weight: 800; }
+.detail-amount.approved { color: #16a34a; }
+
+/* ── Source badges ───────────────────────────────────────────────────────── */
+.cat-badge      { display:inline-flex; align-items:center; gap:4px; font-size:11px; font-weight:600; padding:3px 9px; border-radius:5px; }
+.cat-import     { background:#e0f2f9; color:#0891b2; }
+.cat-supplier   { background:#e8eef9; color:#1a3f8f; }
+.cat-salary     { background:#e6f7f3; color:#1faa8b; }
+.cat-contractor { background:#fef3e2; color:#f59e0b; }
+.cat-rent       { background:#fce7f3; color:#be185d; }
+
+/* ── Status badges ───────────────────────────────────────────────────────── */
+.status-badge     { font-size:11px; font-weight:700; padding:4px 10px; border-radius:20px; }
+.status-draft     { background:#f3f4f6; color:#6b7280; }
+.status-submitted { background:#dbeafe; color:#1d4ed8; }
+.status-pending   { background:#fef3c7; color:#92400e; }
+.status-review    { background:#ede9fe; color:#5b21b6; }
+.status-approved  { background:#dcfce7; color:#166534; }
+.status-rejected  { background:#fee2e2; color:#991b1b; }
+.status-credited  { background:#d1fae5; color:#065f46; }
+
+/* ── Challan verified badge ──────────────────────────────────────────────── */
+.challan-verified {
+  font-size: 12px; font-weight: 700; color: #16a34a;
+  display: inline-flex; align-items: center; gap: 4px;
+}
+
+/* ── Documents ───────────────────────────────────────────────────────────── */
+.doc-list  { display: flex; flex-direction: column; gap: 8px; }
+.doc-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 10px 12px;
+  background: #f9fafb; border: 1px solid #e5e7eb; border-radius: 8px;
+  text-decoration: none; color: #374151; font-size: 12px;
+  transition: background 0.15s;
+}
+.doc-item:hover { background: #eff6ff; color: #1d4ed8; }
+.doc-name { flex: 1; font-weight: 600; }
+.doc-size { color: #9ca3af; font-size: 11px; }
+
+/* ── Officer action forms ────────────────────────────────────────────────── */
+.action-btn-group {
+  display: flex; gap: 10px; margin-top: 12px;
+}
+.action-btn-group .btn { flex: 1; }
+
+.reject-panel {
+  margin-top: 14px; padding: 14px;
+  background: #fef2f2; border: 1px solid #fecaca;
+  border-radius: 10px;
+}
+
+.credit-summary {
+  text-align: center; padding: 14px;
+  background: #f0fdf4; border: 1px solid #bbf7d0;
+  border-radius: 10px; margin-bottom: 12px;
+}
+.credit-amount { font-size: 22px; font-weight: 800; color: #16a34a; }
+.credit-label  { font-size: 12px; color: #6b7280; margin-top: 2px; }
+
+/* ── Rejection card ──────────────────────────────────────────────────────── */
+.rejection-card { border-color: #fecaca; }
+.rejection-icon { background: #fee2e2; color: #dc2626; }
+.rejection-text { font-size: 13px; color: #374151; line-height: 1.6; }
+
+/* ── Audit timeline ──────────────────────────────────────────────────────── */
+.audit-timeline { display: flex; flex-direction: column; gap: 14px; }
+.audit-event    { display: flex; gap: 12px; align-items: flex-start; }
+.audit-event.event-rejected .audit-dot { color: #dc2626; }
+.audit-dot { font-size: 8px; color: #4f46e5; margin-top: 4px; flex-shrink: 0; }
+.audit-body { flex: 1; }
+.audit-transition {
+  display: flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 700; color: #111827; margin-bottom: 2px;
+}
+.audit-from { color: #6b7280; }
+.audit-to   { color: #4f46e5; }
+.audit-meta { font-size: 11px; color: #9ca3af; display: flex; gap: 6px; }
+.audit-reason { font-size: 11px; color: #6b7280; margin-top: 2px; font-style: italic; }
+
+/* ── Form fields ─────────────────────────────────────────────────────────── */
+.field-group { display: flex; flex-direction: column; gap: 4px; }
+.field-label { font-size: 12px; font-weight: 600; color: #6b7280; }
+.field-label.required::after { content: ' *'; color: #dc2626; }
+.field-input {
+  padding: 9px 12px; border: 1px solid #e5e7eb; border-radius: 8px;
+  font-size: 13px; color: #111827; outline: none; width: 100%;
+}
+.field-input:focus { border-color: #4f46e5; box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+.field-error { font-size: 11px; color: #dc2626; }
+.field-hint  { font-size: 11px; color: #9ca3af; }
+.form-grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-action-row { margin-top: 12px; display: flex; justify-content: flex-end; }
+
+/* ── Button styles ───────────────────────────────────────────────────────── */
+.btn { display:inline-flex; align-items:center; gap:6px; padding:9px 16px; border-radius:8px; font-size:13px; font-weight:600; cursor:pointer; border:none; transition:all 0.2s; }
+.btn-primary { background:#4f46e5; color:#fff; }
+.btn-primary:hover:not(:disabled) { background:#4338ca; }
+.btn-success { background:#16a34a; color:#fff; }
+.btn-success:hover:not(:disabled) { background:#15803d; }
+.btn-danger  { background:#dc2626; color:#fff; }
+.btn-danger:hover:not(:disabled) { background:#b91c1c; }
+.btn-outline { background:#fff; color:#374151; border:1px solid #e5e7eb; }
+.btn-outline:hover:not(:disabled) { background:#f9fafb; }
+.btn:disabled { opacity:.55; cursor:not-allowed; }
+.w-full { width: 100%; justify-content: center; }
+
+.mb-12 { margin-bottom: 12px; }
+.mt-10 { margin-top: 10px; }
+.ms-auto { margin-left: auto; }
+.ms-2  { margin-left: 8px; }

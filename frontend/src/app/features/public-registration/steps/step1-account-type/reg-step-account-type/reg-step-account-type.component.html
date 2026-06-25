@@ -1,0 +1,57 @@
+<div class="step-body">
+
+  <div class="step-intro">
+    <h3 class="step-heading">What type of taxpayer are you?</h3>
+    <p class="step-sub">First select a category, then your specific taxpayer type.</p>
+  </div>
+
+  <!-- Loading -->
+  <div class="type-loading" *ngIf="isLoading">
+    <span class="spinner-border spinner-border-sm"></span> Loading taxpayer types...
+  </div>
+
+  <ng-container *ngIf="!isLoading">
+
+    <!-- Step 1A: Category Selection -->
+    <div class="category-label">Step 1 — Select Category</div>
+    <div class="category-grid">
+      <button type="button" class="category-card"
+        *ngFor="let cat of categories"
+        [class.selected]="selectedCategory === cat"
+        (click)="selectCategory(cat)">
+        <div class="cat-icon" [ngClass]="categoryMeta[cat].color">
+          <i [class]="'bi ' + categoryMeta[cat].icon"></i>
+        </div>
+        <div class="cat-body">
+          <span class="cat-title">{{ cat }}</span>
+          <span class="cat-desc">{{ categoryMeta[cat].desc }}</span>
+        </div>
+        <i class="bi bi-check-circle-fill cat-check" *ngIf="selectedCategory === cat"></i>
+      </button>
+    </div>
+
+    <!-- Step 1B: Type Selection — only shows after category selected -->
+    <ng-container *ngIf="selectedCategory && filteredTypes.length > 0">
+      <div class="category-label mt">Step 2 — Select Taxpayer Type</div>
+      <div class="type-grid">
+        <button type="button" class="type-card"
+          *ngFor="let t of filteredTypes"
+          [class.selected]="selectedTypeId === t.id"
+          (click)="selectType(t)">
+          <i class="bi bi-check-circle-fill type-check" *ngIf="selectedTypeId === t.id"></i>
+          <span class="type-name">{{ t.typeName }}</span>
+        </button>
+      </div>
+    </ng-container>
+
+  </ng-container>
+
+  <div class="step-actions">
+    <button type="button" class="btn-next"
+      [disabled]="!canProceed"
+      (click)="onNext()">
+      Continue <i class="bi bi-arrow-right"></i>
+    </button>
+  </div>
+
+</div>

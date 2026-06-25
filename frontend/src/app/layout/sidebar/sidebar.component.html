@@ -1,0 +1,125 @@
+<div class="sidebar" [class.collapsed]="isCollapsed">
+
+  <!-- Logo -->
+  <div class="sidebar-logo">
+    <div class="logo-icon">
+      <i class="bi bi-bank2"></i>
+    </div>
+
+    <div class="logo-text" *ngIf="!isCollapsed">
+      <span class="logo-title">VAT & TAX</span>
+      <span class="logo-sub">Management System</span>
+    </div>
+  </div>
+
+  <!-- Scrollable Nav -->
+  <div class="sidebar-scroll">
+    <nav class="sidebar-nav">
+      <ng-container *ngFor="let item of visibleMenuItems">
+
+        <!-- GROUP HEADER -->
+        <div class="nav-group-header" *ngIf="item.isGroupHeader && !isCollapsed">
+          {{ item.label }}
+        </div>
+
+        <div class="nav-group-divider" *ngIf="item.isGroupHeader && isCollapsed"></div>
+
+        <!-- DIRECT LINK (expanded mode) -->
+        <a
+          *ngIf="!item.isGroupHeader && !item.children && !isCollapsed"
+          class="nav-item"
+          [class.active]="isActive(item.route)"
+          (click)="navigate(item.route!)"
+        >
+          <i [class]="item.icon + ' nav-icon'"></i>
+          <span class="nav-label">{{ item.label }}</span>
+        </a>
+
+        <!-- PARENT WITH CHILDREN (expanded mode) -->
+        <div
+          *ngIf="!item.isGroupHeader && item.children && !isCollapsed"
+          class="nav-parent-wrap"
+        >
+          <div
+            class="nav-item nav-parent"
+            [class.active-parent]="isParentActive(item)"
+            [class.expanded]="isExpanded(item.label)"
+            (click)="toggleExpand(item.label)"
+          >
+            <i [class]="item.icon + ' nav-icon'"></i>
+            <span class="nav-label">{{ item.label }}</span>
+            <i
+              class="bi bi-chevron-down nav-arrow"
+              [class.rotated]="isExpanded(item.label)"
+            ></i>
+          </div>
+
+          <div class="nav-children" [class.open]="isExpanded(item.label)">
+            <a
+              *ngFor="let child of item.children"
+              class="nav-child"
+              [class.active]="isActive(child.route)"
+              (click)="navigate(child.route!, $event)"
+            >
+              <i *ngIf="child.icon" [class]="child.icon + ' child-icon'"></i>
+              <span>{{ child.label }}</span>
+            </a>
+          </div>
+        </div>
+
+        <!-- DIRECT LINK (collapsed mode) -->
+        <div
+          *ngIf="!item.isGroupHeader && (!item.children || item.children.length === 0) && isCollapsed"
+          class="nav-flyout-wrap"
+        >
+          <div
+            class="nav-item collapsed-item"
+            [class.active]="isActive(item.route)"
+            (click)="navigate(item.route!)"
+            [title]="item.label"
+          >
+            <i [class]="item.icon + ' nav-icon'"></i>
+          </div>
+        </div>
+
+        <!-- PARENT WITH CHILDREN (collapsed mode) -->
+        <div
+          *ngIf="!item.isGroupHeader && item.children && item.children.length > 0 && isCollapsed"
+          class="collapsed-parent-block"
+        >
+          <div
+            class="nav-item collapsed-item"
+            [class.active-parent]="isParentActive(item)"
+            [title]="item.label"
+            (click)="toggleExpand(item.label)"
+          >
+            <i [class]="item.icon + ' nav-icon'"></i>
+          </div>
+
+          <div class="collapsed-children" [class.open]="isExpanded(item.label)">
+            <a
+              *ngFor="let child of item.children"
+              class="collapsed-child-item"
+              [class.active]="isActive(child.route)"
+              (click)="navigate(child.route!, $event)"
+              [title]="child.label"
+            >
+              <i *ngIf="child.icon" [class]="child.icon + ' collapsed-child-icon'"></i>
+            </a>
+          </div>
+        </div>
+
+      </ng-container>
+    </nav>
+  </div>
+
+  <!-- Footer -->
+  <div class="sidebar-footer" *ngIf="!isCollapsed">
+    <div class="sf-secure">
+      <i class="bi bi-shield-lock-fill"></i>
+      <span>Secure Government Portal</span>
+    </div>
+    <div class="sf-version">v2.0.0 • FY 2025–26</div>
+  </div>
+
+</div>

@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView android:id="@+id/tv_query_no" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/primary" android:textStyle="bold" android:fontFamily="monospace" tools:text="QUERY-01" />
+            <TextView android:id="@+id/tv_query_type" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:background="#F1F4F9" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:textSize="11sp" tools:text="CLARIFICATION" />
+            <TextView android:id="@+id/tv_deadline" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="end" android:textColor="@color/text_secondary" android:textSize="11sp" tools:text="Due: 30 May 2026" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/tv_subject" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="8dp" android:textColor="@color/text_primary" android:textStyle="bold" tools:text="Bank Statement Missing" />
+        <TextView android:id="@+id/tv_query_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_secondary" android:textSize="13sp" tools:text="Please provide the bank statement for the month of June 2024." />
+
+        <LinearLayout
+            android:id="@+id/layout_response"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:background="#F0FDF4"
+            android:orientation="vertical"
+            android:padding="10dp"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✅ Your Response" android:textColor="#1A7A45" android:textSize="11sp" android:textStyle="bold" />
+            <TextView android:id="@+id/tv_response_text" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_primary" android:textSize="13sp" tools:text="I have uploaded the statement in the documents section." />
+            <TextView android:id="@+id/tv_responded_at" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_secondary" android:textSize="10sp" tools:text="Responded: 26 May 2026" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

@@ -1,0 +1,619 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
+import { API_ENDPOINTS } from '../../../../core/constants/api.constants';
+import { Taxpayer } from '../../../../models/taxpayer.model';
+import { finalize, Subject, takeUntil } from 'rxjs';
+import { ToastService } from 'src/app/shared/toast/toast.service';
+import { District, Division, TaxCircle, TaxZone } from 'src/app/models/master-data.model';
+import { MasterDataService } from '../../../../core/services/master-data.service';
+
+@Component({
+  selector: 'app-taxpayer-list',
+  templateUrl: './taxpayer-list.component.html',
+  styleUrls: ['./taxpayer-list.component.css'],
+})
+export class TaxpayerListComponent implements OnInit, OnDestroy {
+  // ────────────────── Properties ──────────────────
+  taxpayers: Taxpayer[] = [];
+  tp: Taxpayer | null = null;
+  searchTerm = '';
+  isLoading = false;
+  isExporting = false;
+
+  private destroy$ = new Subject<void>();
+
+  showDeleteModal = false;
+  pendingDeleteId: number | null = null;
+  showApproveModal = false;
+  showRejectModal = false;
+  pendingApprovalId: number | null = null;
+  divisions: Division[] = [];
+  districts: District[] = [];
+  allDistricts: District[] = [];
+  taxZones: TaxZone[] = [];
+  taxCircles: TaxCircle[] = [];
+  loadingDistricts = false;
+  loadingZones = false;
+  loadingCircles = false;
+  selectedDivisionId: number | null = null;
+  selectedTaxpayerForApproval: any = null;
+  selectedDistrictId: number | null = null;
+  approveDistrict = '';
+  approveDivision = '';
+  rejectNotes = '';
+  approveZone = '';
+  approveCircle = '';
+  isProcessing = false;
+  showNoticeModal   = false;
+  noticeTargetId:   number | null = null;
+  noticeSubject     = '';
+  noticeBody        = '';
+  noticeType        = 'General';
+  noticePriority    = 'Normal';
+  isSendingNotice   = false;
+  isFromAddressWarn = false;
+
+  // ── Filters — replaces the old tab pattern with KPI cards + dropdown ──────
+  approvalFilter: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED' | '' = '';
+  typeFilter = '';
+
+  typeOptions: string[] = [];   // populated from taxpayerType.typeName once data loads
+
+  // ── Pagination ──────────────────────────────────────────────────────────
+  currentPage = 1;
+  pageSize = 20;
+  readonly pageSizeOptions = [10, 20, 50, 100];
+
+  // ──────────────Constructor  ───────────────────
+
+  constructor(
+    private http: HttpClient,
+    private router: Router,
+    private toast: ToastService,
+    private masterData: MasterDataService
+  ) {}
+
+  // ─────────────── Lifecycle  ───────────────────
+  ngOnInit(): void {
+    this.fetchTaxpayer();
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ───────────────── Data Fetching  ────────────────────────
+
+  private fetchTaxpayer(): void {
+    this.isLoading = true;
+
+    this.http
+      .get<Taxpayer[]>(API_ENDPOINTS.TAXPAYERS.LIST)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)),
+      )
+      .subscribe({
+        next: (data) => this.handleFetchSuccess(data),
+        error: (error) => this.handleFetchError(error),
+      });
+  }
+
+  private handleFetchSuccess(data: Taxpayer[]): void {
+    this.taxpayers = data;
+    this.taxpayers = data.filter(tp => tp.status !== 'Inactive');
+    this.buildTypeOptions();
+    this.notifyIfEmpty(data);
+  }
+
+  private handleFetchError(error: unknown): void {
+    console.error('Error loading taxpayers:', error);
+    this.toast.error('Failed to load taxpayers. Please refresh the page.');
+  }
+
+  private notifyIfEmpty(data: Taxpayer[]): void {
+    if (data.length === 0) {
+      this.toast.info(
+        'No taxapyers registered yet. Click "Register taxpayers" to add one.',
+      );
+    }
+  }
+
+  /** Extracts distinct taxpayer type names for the Type filter dropdown. */
+  private buildTypeOptions(): void {
+    const types = new Set<string>();
+    for (const tp of this.taxpayers) {
+      if (tp.taxpayerType?.typeName) types.add(tp.taxpayerType.typeName);
+    }
+    this.typeOptions = Array.from(types).sort();
+  }
+
+  // ─────────────────── Helper Methods ────────────────────────
+
+  getDisplayName(taxpayer: any): string {
+    const category = taxpayer?.taxpayerType?.category?.toLowerCase() || '';
+
+    if (category === 'business' || category === 'organization') {
+      return taxpayer.companyName || 'Unknown Company';
+    } else {
+      return taxpayer.fullName || 'Unknown Individual';
+    }
+  }
+
+  // ── KPI Summary Cards — mirrors Payment/ITR/Business module's card row ────
+
+  get kpiPending(): number {
+    return this.taxpayers.filter((tp) => tp.approvalStatus === 'PENDING_REVIEW').length;
+  }
+
+  get kpiApproved(): number {
+    return this.taxpayers.filter((tp) => tp.approvalStatus === 'APPROVED').length;
+  }
+
+  get kpiRejected(): number {
+    return this.taxpayers.filter((tp) => tp.approvalStatus === 'REJECTED').length;
+  }
+
+  get kpiActive(): number {
+    return this.taxpayers.filter((tp) => tp.status === 'Active').length;
+  }
+
+  /** Kept for compatibility with anything still referencing the old name. */
+  get pendingCount(): number {
+    return this.kpiPending;
+  }
+
+  /** Called when a clickable KPI status card is clicked — toggles filter. */
+  onKpiCardClick(status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED'): void {
+    this.approvalFilter = this.approvalFilter === status ? '' : status;
+    this.currentPage = 1;
+  }
+
+  isKpiActive(status: 'PENDING_REVIEW' | 'APPROVED' | 'REJECTED'): boolean {
+    return this.approvalFilter === status;
+  }
+
+  /** Any filter/search change resets back to page 1 — call from (ngModelChange). */
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
+  hasActiveFilters(): boolean {
+    return !!(this.searchTerm || this.approvalFilter || this.typeFilter);
+  }
+
+  clearFilters(): void {
+    this.searchTerm     = '';
+    this.approvalFilter = '';
+    this.typeFilter     = '';
+    this.currentPage    = 1;
+  }
+
+  // ─────────────────── Filtering ────────────────────────
+
+  get filteredTaxpayers(): Taxpayer[] {
+    let result = this.taxpayers;
+
+    if (this.approvalFilter) {
+      result = result.filter(tp => tp.approvalStatus === this.approvalFilter);
+    }
+
+    if (this.typeFilter) {
+      result = result.filter(tp => tp.taxpayerType?.typeName === this.typeFilter);
+    }
+
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter(tp => this.matchesSearchTerm(tp, term));
+    }
+
+    return result;
+  }
+
+  private matchesSearchTerm(tp: Taxpayer, term: string): boolean {
+    const name = this.getDisplayName(tp).toLowerCase();
+    const tin = tp.tinNumber ? tp.tinNumber.toLowerCase() : '';
+    const email = tp.email ? tp.email.toLowerCase() : '';
+    const phone = tp.phone ? tp.phone : '';
+
+    return (
+      name.includes(term) ||
+      tin.includes(term) ||
+      email.includes(term) ||
+      phone.includes(term)
+    );
+  }
+
+  // ── Pagination ───────────────────────────────────────────────────────────
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredTaxpayers.length / this.pageSize));
+  }
+
+  get paginatedTaxpayers(): Taxpayer[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredTaxpayers.slice(start, start + this.pageSize);
+  }
+
+  get pageRangeStart(): number {
+    if (this.filteredTaxpayers.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageRangeEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredTaxpayers.length);
+  }
+
+  goToPrevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+  }
+
+  // ─────────────────── Delete Flow ────────────────────────
+
+  confirmDelete(id: number | undefined): void {
+    if (!id) return;
+    this.pendingDeleteId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.resetDeleteState();
+  }
+
+  confirmDeleteExecute(): void {
+    if (this.pendingDeleteId === null) return;
+    const id = this.pendingDeleteId;
+    this.resetDeleteState();
+    this.deleteTaxpayer(id);
+  }
+
+  private deleteTaxpayer(id: number): void {
+    this.isLoading = true;
+    this.http
+      .delete(API_ENDPOINTS.TAXPAYERS.DELETE(id))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)),
+      )
+      .subscribe({
+        next: () => this.handleDeleteSuccess(id),
+        error: () => this.handleDeleteError(),
+      });
+  }
+
+  private handleDeleteSuccess(id: number): void {
+    this.taxpayers = this.taxpayers.filter((tp) => tp.id !== id);
+    this.toast.success('Taxpayer deleted successfully.');
+  }
+
+  private handleDeleteError(): void {
+    this.toast.error('Failed to delete taxpayer. Please try again.');
+  }
+
+  private resetDeleteState(): void {
+    this.pendingDeleteId = null;
+    this.showDeleteModal = false;
+  }
+
+  // ─────────────────── Pagination / Routing ─────────────────────────
+
+  viewTaxpayers(id: number | undefined): void {
+    if (id) this.router.navigate(['/taxpayers/view', id]);
+  }
+
+  editTaxpayers(id: number | undefined): void {
+    if (id) this.router.navigate(['/taxpayers/edit', id]);
+  }
+
+  // Approve flow
+  openApprove(id: number | undefined): void {
+    if (!id) return;
+    this.pendingApprovalId = id;
+    this.approveZone   = '';
+    this.approveCircle = '';
+    this.taxZones      = [];
+    this.taxCircles    = [];
+    this.showApproveModal = true;
+
+    this.selectedTaxpayerForApproval = 
+      this.taxpayers.find(tp => tp.id === id) || null;
+
+    // Address 
+    const district = 
+      this.selectedTaxpayerForApproval?.presentAddress?.district;
+
+    if (district) {
+      this.loadingZones = true;
+      this.http.get<any[]>(API_ENDPOINTS.MASTER_DATA.DISTRICTS)
+        .subscribe(districts => {
+          const matched = districts.find(
+            d => d.name.toLowerCase() === district.toLowerCase()
+          );
+          if (matched) {
+            this.masterData.getTaxZonesByDistrict(matched.id)
+              .pipe(finalize(() => this.loadingZones = false))
+              .subscribe(zones => 
+                this.taxZones = zones.filter((z: any) => !!z.name)
+              );
+          } else {
+            this.loadingZones = false;
+          }
+        });
+    }
+  }
+
+  onApproveDivisionChange(): void {
+    this.approveDistrict = '';
+    this.approveZone     = '';
+    this.approveCircle   = '';
+    this.districts       = [];
+    this.taxZones        = [];
+    this.taxCircles      = [];
+
+    if (!this.selectedDivisionId) return;
+
+    this.approveDivision = this.divisions.find(
+      d => d.id === this.selectedDivisionId
+    )?.name || '';
+
+    this.loadingDistricts = true;
+    this.masterData.getDistrictsByDivision(this.selectedDivisionId)
+      .pipe(finalize(() => this.loadingDistricts = false))
+      .subscribe(data => this.districts = data);
+  }
+
+  onApproveDistrictChange(): void {
+    this.approveZone    = '';
+    this.approveCircle  = '';
+    this.taxZones       = [];
+    this.taxCircles     = [];
+
+    const district = this.districts.find(d => d.name === this.approveDistrict);
+    if (!district) return;
+
+    this.loadingZones = true;
+    this.masterData.getTaxZonesByDistrict(district.id)
+      .pipe(finalize(() => this.loadingZones = false))
+      .subscribe(data => this.taxZones = data.filter((z: any) => !!z.name));
+  }
+
+  onApproveDistrictIdChange(): void {
+    this.approveZone   = '';
+    this.approveCircle = '';
+    this.taxZones      = [];
+    this.taxCircles    = [];
+    if (!this.selectedDistrictId) return;
+
+    this.loadingZones = true;
+    this.masterData.getTaxZonesByDistrict(this.selectedDistrictId)
+      .pipe(finalize(() => this.loadingZones = false))
+      .subscribe(data => this.taxZones = data.filter((z: any) => !!z.name));
+  }
+
+  onApproveZoneChange(): void {
+    this.approveCircle = '';
+    this.taxCircles    = [];
+
+    const zone = this.taxZones.find((z: any) => z.name === this.approveZone);
+    if (!zone) return;
+
+    this.loadingCircles = true;
+    this.masterData.getTaxCirclesByZone(zone.id)
+      .pipe(finalize(() => this.loadingCircles = false))
+      .subscribe(data => this.taxCircles = data.filter((c: any) => !!c.name));
+  }
+
+  openNoticeModal(id: number | undefined): void {
+    if (!id) return;
+    this.isFromAddressWarn = false;
+    this.noticeTargetId   = id;
+    this.noticeSubject    = '';
+    this.noticeBody       = '';
+    this.noticeType       = 'General';
+    this.noticePriority   = 'Normal';
+    this.showNoticeModal  = true;
+  }
+
+  closeNoticeModal(): void {
+    this.showNoticeModal  = false;
+    this.noticeTargetId   = null;
+    this.noticeSubject    = '';
+    this.noticeBody       = '';
+  }
+
+  confirmSendNotice(): void {
+    if (!this.noticeSubject.trim() || !this.noticeBody.trim()) {
+      this.toast.warning('Subject and message are required.');
+      return;
+    }
+
+    this.isSendingNotice = true;
+    this.http.post(API_ENDPOINTS.NOTICES.CREATE, {
+      taxpayerId:     this.noticeTargetId,
+      subject:        this.noticeSubject,
+      body:           this.noticeBody,
+      noticeType:     this.noticeType,
+      priority:       this.noticePriority,
+      targetType:     'Specific Taxpayer',
+      issuedBy:       'Officer',
+      issuedDate:     new Date().toISOString().split('T')[0],
+      dueDate:        null,
+      attachmentName: null
+    }).pipe(
+      takeUntil(this.destroy$),
+      finalize(() => this.isSendingNotice = false)
+    ).subscribe({
+      next: () => {
+        this.toast.success('Notice sent successfully!');
+        this.closeNoticeModal();
+      },
+      error: () => this.toast.error('Failed to send notice.')
+    });
+  }
+
+  closeApprove(): void {
+    this.showApproveModal = false;
+    this.pendingApprovalId = null;
+  }
+
+  confirmApprove(): void {
+    if (!this.pendingApprovalId) return;
+
+    const taxpayer = this.taxpayers.find(
+      tp => tp.id === this.pendingApprovalId
+    );
+
+    // Address check
+    const hasAddress = !!(
+      taxpayer?.presentAddress?.district &&
+      taxpayer?.presentAddress?.division
+    );
+
+    if (!hasAddress) {
+      this.sendAddressNotice(this.pendingApprovalId);
+      return;
+    }
+
+    // Normal approval flow
+    if (!this.approveZone || !this.approveCircle) {
+      this.toast.warning('Please select Tax Zone and Tax Circle.');
+      return;
+    }
+
+    
+
+    this.isProcessing = true;
+    const url = `${API_ENDPOINTS.TAXPAYERS.LIST}/${this.pendingApprovalId}/approve`;
+
+    this.http.put(url, {
+      taxZone:    this.approveZone,
+      taxCircle:  this.approveCircle,
+      reviewNotes: 'Approved'
+    }).pipe(
+      takeUntil(this.destroy$),
+      finalize(() => this.isProcessing = false)
+    ).subscribe({
+      next: () => {
+        this.toast.success('Taxpayer approved and TIN issued!');
+        this.closeApprove();
+        this.fetchTaxpayer();
+      },
+      error: () => this.toast.error('Approval failed.')
+    });
+  }
+
+  private sendAddressNotice(taxpayerId: number): void {
+    this.isProcessing     = false;
+    this.isFromAddressWarn = true;
+    this.noticeTargetId   = taxpayerId;
+    this.noticeSubject    = 'Action Required: Complete Your Profile';
+    this.noticeBody       = 'Your registration application is pending approval. ' +
+                            'Please complete your profile by adding your present address ' +
+                            '(Division and District) to proceed with TIN issuance.';
+    this.noticeType       = 'General';
+    this.noticePriority   = 'High';
+    this.showApproveModal = false;   
+    this.showNoticeModal  = true;    
+  }
+
+  // Reject flow
+  openReject(id: number | undefined): void {
+    if (!id) return;
+    this.pendingApprovalId = id;
+    this.rejectNotes = '';
+    this.showRejectModal = true;
+  }
+
+  closeReject(): void {
+    this.showRejectModal = false;
+    this.pendingApprovalId = null;
+  }
+
+  confirmReject(): void {
+    if (!this.pendingApprovalId) return;
+    if (!this.rejectNotes.trim()) {
+      this.toast.warning('Please enter rejection reason.');
+      return;
+    }
+
+    this.isProcessing = true;
+    const url = `${API_ENDPOINTS.TAXPAYERS.LIST}/${this.pendingApprovalId}/reject`;
+
+    this.http.put(url, {
+      reviewNotes: this.rejectNotes
+    }).pipe(
+      takeUntil(this.destroy$),
+      finalize(() => this.isProcessing = false)
+    ).subscribe({
+      next: () => {
+        this.toast.success('Taxpayer application rejected.');
+        this.closeReject();
+        this.fetchTaxpayer();
+      },
+      error: () => this.toast.error('Rejection failed. Please try again.')
+    });
+  }
+  // ─────────────────── Export Section ─────────────────────────
+
+  onExport(): void {
+    this.isExporting = true;
+
+    this.http
+      .get(API_ENDPOINTS.TAXPAYERS.EXPORT, { responseType: 'blob' })
+      .subscribe({
+        next: (blob: Blob) => {
+          const url = window.URL.createObjectURL(blob);
+          const a = document.createElement('a');
+          a.href = url;
+          a.download = `Taxpayer_List_Export_${new Date().toISOString().split('T')[0]}.csv`;
+          document.body.appendChild(a);
+          a.click();
+
+          // Memory cleanup
+          document.body.removeChild(a);
+          window.URL.revokeObjectURL(url);
+
+          this.isExporting = false;
+          this.toast.success('Taxpayer data exported successfully!');
+        },
+        error: () => {
+          this.isExporting = false;
+          this.toast.error('Failed to export Taxpayer data.');
+        },
+      });
+  }
+
+  // ─────────────────── UI Helpers ─────────────────────────
+
+  selectedTaxpayerHasAddress(): boolean {
+    return !!(
+      this.selectedTaxpayerForApproval?.presentAddress?.district &&
+      this.selectedTaxpayerForApproval?.presentAddress?.division
+    );
+  }
+
+  getStatusClass(status: string): string {
+    const map: Record<string, string> = {
+      Active: 'status-active',
+      Inactive: 'status-inactive',
+      Pending: 'status-pending',
+      Suspended: 'status-suspended',
+    };
+    return map[status] ?? '';
+  }
+   getPhotoUrl(photoPath: string): string {
+    return 'http://localhost:8080' + photoPath;
+  }
+
+  
+}

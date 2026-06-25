@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.cardview.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginHorizontal="8dp"
+    android:layout_marginVertical="6dp"
+    app:cardCornerRadius="10dp"
+    app:cardElevation="2dp">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:gravity="center_vertical">
+            <TextView android:id="@+id/tv_request_no" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/primary" android:textStyle="bold" android:fontFamily="monospace" tools:text="DOCREQ-563B2007" />
+            <View android:layout_width="0dp" android:layout_height="0dp" android:layout_weight="1" />
+            <TextView android:id="@+id/tv_doc_status" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="#F8FAF8" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textSize="11sp" android:textStyle="bold" tools:text="FULFILLED" />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:orientation="horizontal">
+            <TextView android:id="@+id/tv_request_type" android:layout_width="wrap_content" android:layout_height="wrap_content" android:background="#FFF3E0" android:paddingHorizontal="6dp" android:paddingVertical="2dp" android:textColor="#E65100" android:textSize="11sp" tools:text="CLARIFICATION" />
+            <TextView android:id="@+id/tv_doc_deadline" android:layout_width="0dp" android:layout_height="wrap_content" android:layout_weight="1" android:gravity="end" android:textColor="@color/text_secondary" android:textSize="11sp" tools:text="Due: 30 May 2026" />
+        </LinearLayout>
+
+        <TextView android:id="@+id/tv_requested_docs" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="12dp" android:textColor="@color/text_primary" android:textStyle="bold" android:textSize="13sp" tools:text="📄 Bank Statements" />
+        <TextView android:id="@+id/tv_request_reason" android:layout_width="match_parent" android:layout_height="wrap_content" android:layout_marginTop="4dp" android:textColor="@color/text_secondary" android:textSize="12sp" tools:text="I think you miscalculated any data" />
+
+        <LinearLayout
+            android:id="@+id/layout_fulfilled"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="12dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:visibility="gone"
+            tools:visibility="visible">
+            <TextView android:layout_width="wrap_content" android:layout_height="wrap_content" android:text="✅" android:textSize="14sp" />
+            <TextView android:id="@+id/tv_fulfillment_notes" android:layout_width="wrap_content" android:layout_height="wrap_content" android:layout_marginStart="8dp" android:textColor="#1A7A45" android:textSize="12sp" tools:text="Fulfilled: Documents uploaded: Birthday card.docx" />
+        </LinearLayout>
+
+    </LinearLayout>
+</androidx.cardview.widget.CardView>

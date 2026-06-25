@@ -1,0 +1,372 @@
+/* ── KPI Row ─────────────────────────────────────────────────────────────── */
+.audit-kpi-row {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  padding: 16px 20px;
+}
+
+.akpi-card {
+  flex: 1;
+  min-width: 140px;
+  background: #fff;
+  border: 1px solid #eef2f8;
+  border-radius: 12px;
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+  transition: box-shadow 0.2s, border-color 0.2s, background 0.2s;
+}
+
+.akpi-card:hover {
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.09);
+}
+
+/* Clickable KPI card — shows pointer, lifts on hover */
+.akpi-card.clickable {
+  cursor: pointer;
+}
+
+/* Active state — when this card's status-group is the current quick filter */
+.akpi-card.active {
+  border-color: #1faa8b;
+  background: #f3fdf9;
+  box-shadow: 0 4px 16px rgba(31, 170, 139, 0.18);
+}
+.akpi-card.active .akpi-label {
+  color: #0f8a70;
+}
+.akpi-card.active .akpi-value {
+  color: #1faa8b;
+}
+
+.akpi-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+
+.akpi-icon.blue {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.akpi-icon.green {
+  background: #e6f7ee;
+  color: #1a7a45;
+}
+.akpi-icon.orange {
+  background: #fff3e0;
+  color: #e65100;
+}
+.akpi-icon.teal {
+  background: #e0f7fa;
+  color: #00695c;
+}
+.akpi-icon.red {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.akpi-text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.akpi-label {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+  text-transform: uppercase;
+  letter-spacing: 0.4px;
+}
+
+.akpi-value {
+  font-size: 22px;
+  font-weight: 800;
+  color: #1a2340;
+  line-height: 1.2;
+}
+
+/* ── Filter Dropdown — visible chevron + active-filter highlight ──────────── */
+/* (Local override since .filter-select comes from global CSS without a
+   chevron icon — same fix applied to Payment and ITR list modules.) */
+
+.filter-select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%231a3f8f' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  background-color: #fff;
+
+  padding: 8px 36px 8px 14px;
+  border: 1.5px solid #d0daf5;
+  border-radius: 8px;
+  font-size: 13px;
+  color: #444;
+  cursor: pointer;
+  min-width: 140px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.filter-select:hover {
+  border-color: #1a3f8f;
+}
+
+.filter-select:focus {
+  outline: none;
+  border-color: #1a3f8f;
+  box-shadow: 0 0 0 3px rgba(26, 63, 143, 0.08);
+}
+
+.filter-select.active-filter {
+  border-color: #1faa8b;
+  color: #0f8a70;
+  font-weight: 600;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 16 16'%3E%3Cpath fill='%231faa8b' d='M7.247 11.14L2.451 5.658C1.885 5.013 2.345 4 3.204 4h9.592a1 1 0 0 1 .753 1.659l-4.796 5.48a1 1 0 0 1-1.506 0z'/%3E%3C/svg%3E");
+}
+
+/* ── KPI Quick-Filter Banner ────────────────────────────────────────────── */
+
+.kpi-filter-banner {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin: 12px 0;
+  padding: 10px 16px;
+  background: #f3fdf9;
+  border: 1.5px solid #1faa8b;
+  border-radius: 10px;
+  font-size: 13px;
+  color: #0f8a70;
+}
+.kpi-filter-banner i.bi-funnel-fill {
+  color: #1faa8b;
+  flex-shrink: 0;
+}
+.kpi-filter-banner span {
+  flex: 1;
+  min-width: 0;
+}
+.btn-clear-kpi {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: #fff;
+  border: 1px solid #1faa8b;
+  color: #1faa8b;
+  font-size: 12px;
+  font-weight: 600;
+  padding: 5px 12px;
+  border-radius: 7px;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: background 0.15s;
+}
+.btn-clear-kpi:hover {
+  background: #e6f7f3;
+}
+
+/* ── Type / Priority Badges ──────────────────────────────────────────────── */
+.cat-badge.type-desk {
+  background: #e8f0fe;
+  color: #1967d2;
+}
+.cat-badge.type-field {
+  background: #fef7e0;
+  color: #b45309;
+}
+.cat-badge.type-comp {
+  background: #f3e8ff;
+  color: #6d28d9;
+}
+.cat-badge.type-vat {
+  background: #ecfdf5;
+  color: #059669;
+}
+.cat-badge.type-refund {
+  background: #fff1f2;
+  color: #be123c;
+}
+.cat-badge.type-special {
+  background: #fff7ed;
+  color: #c2410c;
+}
+
+.priority-pill {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 20px;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+.priority-pill.pri-low {
+  background: #f5f7fb;
+  color: #546e7a;
+}
+.priority-pill.pri-normal {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.priority-pill.pri-high {
+  background: #fff3e0;
+  color: #e65100;
+}
+.priority-pill.pri-critical {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+/* ── Code Badge ──────────────────────────────────────────────────────────── */
+.code-badge {
+  font-family: monospace;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a3f8f;
+  background: #e8eef9;
+  padding: 2px 8px;
+  border-radius: 5px;
+}
+
+.due-overdue {
+  color: #c62828;
+  font-weight: 700;
+  font-size: 12px;
+}
+
+/* ── Status Badge Extensions ─────────────────────────────────────────────── */
+.badge-orange {
+  background: #fff3e0;
+  color: #e65100;
+  border: 1px solid #fddcb5;
+}
+.badge-teal {
+  background: #e0f7fa;
+  color: #00695c;
+  border: 1px solid #b2ebf2;
+}
+.badge-purple {
+  background: #f3e8ff;
+  color: #6d28d9;
+  border: 1px solid #ddd6fe;
+}
+.badge-indigo {
+  background: #e0e7ff;
+  color: #3730a3;
+  border: 1px solid #c7d2fe;
+}
+.badge-yellow {
+  background: #fffbeb;
+  color: #92400e;
+  border: 1px solid #fde68a;
+}
+.badge-pink {
+  background: #fce7f3;
+  color: #9d174d;
+  border: 1px solid #fbcfe8;
+}
+.badge-lime {
+  background: #f7fee7;
+  color: #3f6212;
+  border: 1px solid #d9f99d;
+}
+.badge-muted {
+  background: #f3f4f6;
+  color: #6b7280;
+  border: 1px solid #e5e7eb;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+@media (max-width: 768px) {
+  .audit-kpi-row {
+    padding: 12px;
+  }
+  .akpi-card {
+    min-width: calc(50% - 6px);
+    flex: 0 0 calc(50% - 6px);
+  }
+  .kpi-filter-banner {
+    flex-wrap: wrap;
+  }
+}
+@media (max-width: 480px) {
+  .akpi-card {
+    min-width: 100%;
+    flex: 0 0 100%;
+  }
+}
+
+/* ── Pagination ─────────────────────────────────────────────────────────── */
+.pagination-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 18px 0 0 20px;
+  border-top: 1px solid #eef2f8;
+}
+.pagination-info {
+  font-size: 12px;
+  color: #6b7280;
+  padding-left: 4px;
+}
+.pagination-controls {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.btn-page,
+.page-num {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 42px;
+  padding: 7px 12px;
+  border-radius: 8px;
+  border: 1px solid #e0e8f0;
+  background: #fff;
+  color: #1a3f8f;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    background 0.2s,
+    border-color 0.2s,
+    color 0.2s;
+}
+.btn-page:hover:not(:disabled),
+.page-num:hover {
+  background: #e8eef9;
+}
+.btn-page:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+.page-num.active {
+  background: #1a3f8f;
+  color: #fff;
+  border-color: #1a3f8f;
+}
+.page-size-select {
+  min-width: 120px;
+  padding: 8px 10px;
+  border: 1px solid #e0e8f0;
+  border-radius: 8px;
+  background: #fff;
+  color: #1a3f8f;
+  font-size: 12px;
+}

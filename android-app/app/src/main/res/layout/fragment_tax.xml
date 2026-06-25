@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/background">
+
+    <!-- Sub tabs -->
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/card_background"
+        android:elevation="4dp">
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="56dp"
+            android:orientation="horizontal"
+            android:paddingStart="8dp"
+            android:paddingEnd="8dp">
+
+            <Button
+                android:id="@+id/btnItr"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="ITR Returns"
+                android:textColor="@color/primary"/>
+
+            <Button
+                android:id="@+id/btnAit"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="AIT Records"
+                android:textColor="@color/text_secondary"/>
+
+            <Button
+                android:id="@+id/btnCertificate"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Certificate"
+                android:textColor="@color/text_secondary"/>
+
+            <Button
+                android:id="@+id/btnAppeals"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Appeals"
+                android:textColor="@color/text_secondary"/>
+
+            <Button
+                android:id="@+id/btnBusiness"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Businesses"
+                android:textColor="@color/text_secondary"/>
+
+            <Button
+                android:id="@+id/btnAudits"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:text="Audits"
+                android:textColor="@color/text_secondary"/>
+
+        </LinearLayout>
+    </HorizontalScrollView>
+
+    <!-- Content area -->
+    <FrameLayout
+        android:id="@+id/taxContent"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"/>
+
+</LinearLayout>

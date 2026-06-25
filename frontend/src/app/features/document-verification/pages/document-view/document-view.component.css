@@ -1,0 +1,32 @@
+.doc-no {
+  font-size: 14px;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 4px;
+}
+.doc-title-text {
+  font-size: 20px;
+  font-weight: 800;
+  line-height: 1.2;
+  margin-bottom: 8px;
+}
+.doc-type-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.85);
+  font-weight: 600;
+}
+.doc-size {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.7);
+}
+.expiry-expired {
+  font-size: 12px;
+  font-weight: 700;
+  color: #e74c3c;
+  background: #fff0f0;
+  padding: 2px 8px;
+  border-radius: 5px;
+}

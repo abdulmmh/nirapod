@@ -1,0 +1,314 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/white"
+        app:elevation="0dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Payment Details"
+                android:textColor="@color/text_primary"
+                android:textSize="20sp"
+                android:textStyle="bold" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Full transaction information."
+                android:textColor="@color/text_secondary"
+                android:textSize="12sp" />
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btn_back"
+                style="@style/Widget.MaterialComponents.Button.TextButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="← Back"
+                android:textAllCaps="false"
+                android:textColor="@color/primary"
+                android:paddingLeft="0dp"/>
+        </LinearLayout>
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <androidx.core.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <!-- Summary Card -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="16dp"
+                app:cardElevation="4dp">
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/premium_gradient_bg"
+                    android:orientation="vertical"
+                    android:padding="24dp">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal">
+
+                        <View
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/avatar_circle_bg"
+                            android:backgroundTint="#33FFFFFF" />
+
+                        <TextView
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:layout_marginStart="-48dp"
+                            android:gravity="center"
+                            android:text="💳"
+                            android:textSize="20sp" />
+
+                        <LinearLayout
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
+                            android:layout_weight="1"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:id="@+id/tv_header_txn_id"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:textStyle="bold"
+                                android:fontFamily="monospace"
+                                tools:text="TXN-14B02106BEE8" />
+
+                            <LinearLayout
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:orientation="horizontal">
+                                <TextView
+                                    android:id="@+id/tv_header_type"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:background="@drawable/status_badge_bg"
+                                    android:backgroundTint="#33FFFFFF"
+                                    android:paddingHorizontal="10dp"
+                                    android:paddingVertical="2dp"
+                                    android:textColor="@color/white"
+                                    android:textSize="11sp"
+                                    tools:text="Income Tax" />
+                                <TextView
+                                    android:id="@+id/tv_header_date"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="8dp"
+                                    android:textColor="#B3FFFFFF"
+                                    android:textSize="11sp"
+                                    tools:text="📅 2022-07-19" />
+                            </LinearLayout>
+                        </LinearLayout>
+                    </LinearLayout>
+
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="20dp"
+                        android:text="Amount"
+                        android:textColor="#B3FFFFFF"
+                        android:textSize="11sp" />
+
+                    <TextView
+                        android:id="@+id/tv_header_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="2dp"
+                        android:textColor="@color/white"
+                        android:textSize="26sp"
+                        android:textStyle="bold"
+                        tools:text="৳50,000" />
+
+                    <TextView
+                        android:id="@+id/tv_header_status"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="12dp"
+                        android:background="@drawable/status_badge_bg"
+                        android:backgroundTint="#D1FAE5"
+                        android:paddingHorizontal="12dp"
+                        android:paddingVertical="4dp"
+                        android:textColor="#065F46"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        tools:text="Completed" />
+
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Taxpayer Information -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="👤 Taxpayer Information"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="TIN Number" android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_tin" android:gravity="end" android:fontFamily="monospace" android:background="#F1F4F9" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textColor="@color/primary" android:textStyle="bold" android:textSize="12sp" />
+                        </TableRow>
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Taxpayer Name" android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_taxpayer" android:gravity="end" android:textStyle="bold" android:textColor="@color/text_primary" android:textSize="13sp" />
+                        </TableRow>
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Return / Ref No." android:textColor="@color/text_secondary" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_ref_no" android:gravity="end" android:fontFamily="monospace" android:background="#F1F4F9" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textColor="@color/primary" android:textStyle="bold" android:textSize="12sp" />
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Payment Information -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="💳 Payment Information"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Payment Type" android:textSize="13sp"/><TextView android:id="@+id/tv_val_pay_type" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Payment Method" android:textSize="13sp"/><TextView android:id="@+id/tv_val_method" android:gravity="end" android:textStyle="bold"/></TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Amount" android:textSize="13sp"/><TextView android:id="@+id/tv_val_amount" android:gravity="end" android:textStyle="bold" android:textColor="@color/primary" android:textSize="14sp"/></TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Payment Date" android:textSize="13sp"/><TextView android:id="@+id/tv_val_date" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Value Date" android:textSize="13sp"/><TextView android:id="@+id/tv_val_value_date" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Reference No." android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_reference" android:gravity="end" android:fontFamily="monospace" android:background="#F1F4F9" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textColor="@color/primary" android:textStyle="bold" android:textSize="12sp" />
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Bank Information -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="16dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="🏦 Bank Information"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Bank Name" android:textSize="13sp"/><TextView android:id="@+id/tv_val_bank" android:gravity="end" android:textStyle="bold"/></TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Branch" android:textSize="13sp"/><TextView android:id="@+id/tv_val_branch" android:gravity="end"/></TableRow>
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Account No." android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_account" android:gravity="end" android:fontFamily="monospace" android:background="#F1F4F9" android:paddingHorizontal="8dp" android:paddingVertical="2dp" android:textColor="@color/primary" android:textStyle="bold" android:textSize="12sp" />
+                        </TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+            <!-- Processing Information -->
+            <androidx.cardview.widget.CardView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="32dp"
+                app:cardCornerRadius="12dp"
+                app:cardElevation="2dp">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:padding="16dp">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="⚙️ Processing Information"
+                        android:textStyle="bold"
+                        android:textColor="@color/text_primary"
+                        android:textSize="14sp"/>
+                    <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginVertical="12dp" />
+                    <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Status" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_status" android:gravity="end" android:textColor="#16A34A" android:textStyle="bold" android:textSize="12sp" tools:text="Completed" />
+                        </TableRow>
+                        <TableRow android:paddingVertical="8dp">
+                            <TextView android:text="Processed By" android:textSize="13sp"/>
+                            <TextView android:id="@+id/tv_val_processed_by" android:gravity="end" android:textStyle="bold" android:textColor="@color/primary" />
+                        </TableRow>
+                        <TableRow android:paddingVertical="8dp"><TextView android:text="Created At" android:textSize="13sp"/><TextView android:id="@+id/tv_val_created_at" android:gravity="end"/></TableRow>
+                    </TableLayout>
+                </LinearLayout>
+            </androidx.cardview.widget.CardView>
+
+        </LinearLayout>
+    </androidx.core.widget.NestedScrollView>
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

@@ -1,0 +1,315 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>Penalty & Fines</h4>
+    <p>Manage all tax penalties and fines issued by NBR.</p>
+  </div>
+  <a *canDo="'create'" routerLink="/penalties/create" class="btn-add-primary desktop-add-btn">
+    <i class="bi bi-plus-lg"></i> Issue Penalty
+  </a>
+</div>
+
+<!-- KPI Summary Cards -->
+<div class="kpi-cards-row" *ngIf="!isLoading">
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('PENDING_APPROVAL')"
+       (click)="filterByStatus('PENDING_APPROVAL')">
+    <div class="kpi-icon kpi-icon-pending"><i class="bi bi-hourglass-split"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Pending Approval</span>
+      <span class="kpi-value">{{ kpiPendingApproval }}</span>
+    </div>
+  </div>
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('ISSUED')"
+       (click)="filterByStatus('ISSUED')">
+    <div class="kpi-icon kpi-icon-issued"><i class="bi bi-send-fill"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Issued</span>
+      <span class="kpi-value">{{ kpiIssued }}</span>
+    </div>
+  </div>
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('PAID')"
+       (click)="filterByStatus('PAID')">
+    <div class="kpi-icon kpi-icon-paid"><i class="bi bi-check-circle-fill"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Paid</span>
+      <span class="kpi-value">{{ kpiPaid }}</span>
+    </div>
+  </div>
+  <div class="kpi-card clickable"
+       [class.active]="isKpiActive('APPEALED')"
+       (click)="filterByStatus('APPEALED')">
+    <div class="kpi-icon kpi-icon-appealed"><i class="bi bi-shield-exclamation"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Appealed</span>
+      <span class="kpi-value">{{ kpiAppealed }}</span>
+    </div>
+  </div>
+  <div class="kpi-card">
+    <div class="kpi-icon kpi-icon-collected"><i class="bi bi-cash-stack"></i></div>
+    <div class="kpi-info">
+      <span class="kpi-label">Total Collected</span>
+      <span class="kpi-value">{{ formatCurrency(kpiTotalCollected) }}</span>
+    </div>
+  </div>
+</div>
+
+<div class="page-wrapper">
+
+  <!-- Search -->
+  <div class="list-search-bar">
+    <div class="search-field-row">
+      <div class="search-field">
+        <i class="bi bi-search"></i>
+        <input type="text" placeholder="Search by penalty no, TIN, taxpayer, type..."
+          [(ngModel)]="searchTerm" (ngModelChange)="onSearchInput()" />
+      </div>
+      <button *canDo="'export'" class="btn-export">
+        <i class="bi bi-download"></i>
+        <span>Export</span>
+      </button>
+    </div>
+
+    <div class="filter-row" *ngIf="hasActiveFilters()">
+      <button class="btn-clear-filters" (click)="clearAllFilters()">
+        <i class="bi bi-x-circle"></i> Clear filters
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading -->
+  <div class="loading-row" *ngIf="isLoading">
+    <div class="spinner-border spinner-border-sm text-primary"></div>
+    <span>Loading penalties...</span>
+  </div>
+
+  <!-- Desktop Table -->
+  <div class="table-responsive desktop-table" *ngIf="!isLoading">
+    <table class="data-table">
+      <thead>
+        <tr>
+          <th>#</th>
+          <th>Penalty No</th>
+          <th>Taxpayer</th>
+          <th>Type</th>
+          <th>Severity</th>
+          <th>Penalty</th>
+          <th>Interest</th>
+          <th>Total</th>
+          <th>Issue Date</th>
+          <th>Due Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let p of paginatedPenalties; let i = index">
+          <td>{{ pageRangeStart + i }}</td>
+
+          <td><span class="penalty-code">{{ p.penaltyNo }}</span></td>
+
+          <td>
+            <div class="td-name">
+              <div class="td-avatar">{{ p.taxpayerName.charAt(0) }}</div>
+              <div>
+                <span class="td-title">{{ p.taxpayerName }}</span>
+                <span class="td-sub">{{ p.tinNumber }}</span>
+              </div>
+            </div>
+          </td>
+
+          <td>
+            <span class="type-badge" [ngClass]="getTypeClass(p.penaltyType)">
+              {{ p.penaltyType }}
+            </span>
+          </td>
+
+          <td>
+            <span class="sev-badge" [ngClass]="getSeverityClass(p.severity)">
+              <i class="bi bi-exclamation-triangle-fill"></i>
+              {{ p.severity }}
+            </span>
+          </td>
+
+          <td class="amount-cell penalty-amount">
+            {{ formatCurrency(p.penaltyAmount) }}
+          </td>
+
+          <td class="amount-cell interest-amount">
+            {{ formatCurrency(p.interestAmount) }}
+          </td>
+
+          <td class="amount-cell total-amount">
+            {{ formatCurrency(p.totalAmount) }}
+          </td>
+
+          <td>{{ p.issueDate }}</td>
+
+          <td>
+            <span [class]="isDueOverdue(p) ? 'due-overdue' : 'due-normal'">
+              {{ p.dueDate }}
+            </span>
+          </td>
+
+          <td>
+            <span class="status-badge" [ngClass]="getStatusClass(p.status)">
+              {{ p.status }}
+            </span>
+          </td>
+
+          <td>
+            <div class="action-btns">
+              <button class="btn-view" (click)="viewPenalty(p.id)">
+                <i class="bi bi-eye-fill"></i> View
+              </button>
+              <ng-container *ngIf="p.status === 'DRAFT'">
+                <button *canDo="'edit'" class="btn-edit" (click)="editPenalty(p.id)">
+                  <i class="bi bi-pencil-fill"></i> Edit
+                </button>
+              </ng-container>
+              <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete" (click)="confirmDelete(p.id)">
+                <i class="bi bi-trash-fill"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+
+        <tr *ngIf="filteredPenalties.length === 0">
+          <td colspan="12">
+            <div class="empty-state">
+              <i class="bi bi-exclamation-triangle"></i>
+              <p>No penalties found.</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  <div class="pagination-row" *ngIf="!isLoading && filteredPenalties.length > 0">
+    <span class="pagination-info">
+      Showing {{ pageRangeStart }}–{{ pageRangeEnd }} of {{ filteredPenalties.length }}
+    </span>
+    <div class="pagination-controls">
+      <button class="btn-page-nav" (click)="goToPrevPage()" [disabled]="currentPage === 1">
+        <i class="bi bi-chevron-left"></i> Prev
+      </button>
+      <span class="pagination-page-tag">{{ currentPage }}</span>
+      <button class="btn-page-nav" (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next <i class="bi bi-chevron-right"></i>
+      </button>
+    </div>
+    <select class="page-size-select" [(ngModel)]="pageSize" (ngModelChange)="onPageSizeChange()">
+      <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }} / page</option>
+    </select>
+  </div>
+
+  <!-- Mobile Cards -->
+  <div class="mobile-cards" style="padding: 12px;" *ngIf="!isLoading">
+    <div class="mobile-card" *ngFor="let p of paginatedPenalties">
+
+      <div class="mobile-card-header">
+        <div class="mobile-card-title">
+          <div class="mobile-avatar">{{ p.taxpayerName.charAt(0) }}</div>
+          <div>
+            <div class="mobile-name">{{ p.taxpayerName }}</div>
+            <div class="mobile-sub">{{ p.penaltyNo }}</div>
+          </div>
+        </div>
+        <span class="status-badge" [ngClass]="getStatusClass(p.status)">
+          {{ p.status }}
+        </span>
+      </div>
+
+      <div class="mobile-card-body">
+        <div class="mobile-field">
+          <label>TIN</label>
+          <span>{{ p.tinNumber }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Type</label>
+          <span class="type-badge" [ngClass]="getTypeClass(p.penaltyType)">
+            {{ p.penaltyType }}
+          </span>
+        </div>
+        <div class="mobile-field">
+          <label>Severity</label>
+          <span class="sev-badge" [ngClass]="getSeverityClass(p.severity)">
+            {{ p.severity }}
+          </span>
+        </div>
+        <div class="mobile-field">
+          <label>Penalty</label>
+          <span class="penalty-amount">{{ formatCurrency(p.penaltyAmount) }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Interest</label>
+          <span class="interest-amount">{{ formatCurrency(p.interestAmount) }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Total</label>
+          <span class="total-amount">{{ formatCurrency(p.totalAmount) }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Issue Date</label>
+          <span>{{ p.issueDate | date:'dd MMM yyyy' }}</span>
+        </div>
+        <div class="mobile-field">
+          <label>Due Date</label>
+          <span [class]="isDueOverdue(p) ? 'due-overdue' : 'due-normal'">
+            {{ p.dueDate | date:'dd MMM yyyy' }}
+          </span>
+        </div>
+        <div class="mobile-field" *ngIf="p.description">
+          <label>Description</label>
+          <span>{{ p.description }}</span>
+        </div>
+      </div>
+
+      <div class="mobile-card-actions">
+        <button class="btn-view" (click)="viewPenalty(p.id)">
+          <i class="bi bi-eye-fill"></i> View
+        </button>
+        <button *canDo="'edit'" class="btn-edit" (click)="editPenalty(p.id)">
+          <i class="bi bi-pencil-fill"></i> Edit
+        </button>
+        <button *hasRole="['SUPER_ADMIN', 'TAX_COMMISSIONER']" class="btn-delete" (click)="confirmDelete(p.id)">
+          <i class="bi bi-trash-fill"></i> Delete
+        </button>
+      </div>
+
+    </div>
+
+    <div class="empty-state" *ngIf="filteredPenalties.length === 0">
+      <i class="bi bi-exclamation-triangle"></i>
+      <p>No penalties found.</p>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAB -->
+<button *canDo="'create'" class="fab-btn" routerLink="/penalties/create" title="Issue Penalty">
+  <i class="bi bi-plus-lg"></i>
+</button>
+
+<div class="modal-overlay" *ngIf="showDeleteModal">
+  <div class="modal-card">
+    <div class="modal-accent error"></div>
+    <div class="modal-icon-wrap error">
+      <i class="bi bi-trash-fill" style="color:#A32D2D; font-size:22px;"></i>
+    </div>
+    <p class="modal-title">Delete Penalty?</p>
+    <p class="modal-msg">
+      This action cannot be undone. Are you sure you want to delete this penalty record?
+    </p>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" (click)="cancelDelete()">Cancel</button>
+      <button class="btn-modal-confirm error" (click)="confirmDeleteExecute()">
+        <i class="bi bi-trash-fill"></i> Delete
+      </button>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,113 @@
+.doc-code {
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a3f8f;
+  background: #e8eef9;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: monospace;
+  white-space: nowrap;
+}
+.ref-code {
+  font-size: 12px;
+  font-weight: 600;
+  color: #555;
+  background: #f5f7fb;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-family: monospace;
+  white-space: nowrap;
+}
+
+.doc-type-cell {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.doc-type-icon {
+  width: 32px;
+  height: 32px;
+  background: #e8eef9;
+  color: #1a3f8f;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-shrink: 0;
+}
+.doc-title {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1a2340;
+  white-space: nowrap;
+  margin-bottom: 3px;
+}
+
+/* Doc Type */
+.type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+  display: inline-block;
+}
+.type-nid {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-trade {
+  background: #e6f7f3;
+  color: #1faa8b;
+}
+.type-tin {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-bin {
+  background: #e0f2f9;
+  color: #0891b2;
+}
+.type-vat {
+  background: #e6f7f3;
+  color: #1faa8b;
+}
+.type-it {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-bank {
+  background: #fef3e2;
+  color: #f59e0b;
+}
+.type-audit {
+  background: #fff0f0;
+  color: #e74c3c;
+}
+.type-other {
+  background: #f0f4f8;
+  color: #666;
+}
+
+.category-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: #f8fafc;
+  color: #555;
+  border: 1px solid #e0e8f0;
+  padding: 2px 8px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.file-size {
+  font-size: 12px;
+  font-weight: 600;
+  color: #888;
+  white-space: nowrap;
+}
+
+.data-table {
+  min-width: 1500px;
+}

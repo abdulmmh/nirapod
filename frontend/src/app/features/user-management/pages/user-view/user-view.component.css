@@ -1,0 +1,75 @@
+.user-header-card {
+  border-radius: 14px;
+  padding: 24px 28px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  color: #fff;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+.role-super-bg {
+  background: linear-gradient(135deg, #1a0066, #4a0099);
+  box-shadow: 0 4px 20px rgba(74, 0, 153, 0.3);
+}
+.role-commissioner-bg {
+  background: linear-gradient(135deg, #1a3f8f, #2a5fd6);
+  box-shadow: 0 4px 20px rgba(26, 63, 143, 0.3);
+}
+.role-officer-bg {
+  background: linear-gradient(135deg, #1faa8b, #17c69a);
+  box-shadow: 0 4px 20px rgba(31, 170, 139, 0.3);
+}
+.role-auditor-bg {
+  background: linear-gradient(135deg, #f59e0b, #f97316);
+  box-shadow: 0 4px 20px rgba(245, 158, 11, 0.3);
+}
+.role-data-bg {
+  background: linear-gradient(135deg, #0891b2, #06b6d4);
+  box-shadow: 0 4px 20px rgba(8, 145, 178, 0.3);
+}
+.role-taxpayer-bg {
+  background: linear-gradient(135deg, #6b7280, #9ca3af);
+  box-shadow: 0 4px 20px rgba(107, 114, 128, 0.3);
+}
+
+.uhc-avatar {
+  width: 64px;
+  height: 64px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 16px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 28px;
+  font-weight: 800;
+  flex-shrink: 0;
+}
+.uhc-name {
+  font-size: 22px;
+  font-weight: 800;
+  margin-bottom: 4px;
+}
+.uhc-username {
+  font-size: 13px;
+  font-family: monospace;
+  color: rgba(255, 255, 255, 0.7);
+  margin-bottom: 8px;
+}
+.role-pill {
+  background: rgba(255, 255, 255, 0.2);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+.dept-pill {
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 11px;
+  font-weight: 500;
+  padding: 3px 10px;
+  border-radius: 12px;
+}

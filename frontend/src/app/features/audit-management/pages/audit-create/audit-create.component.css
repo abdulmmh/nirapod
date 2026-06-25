@@ -1,0 +1,21 @@
+/* audit-create uses global styles-form.css for all layout */
+/* Only audit-specific additions needed here */
+
+.risk-bar {
+  height: 4px;
+  background: #E0E8F0;
+  border-radius: 2px;
+  margin-top: 6px;
+  overflow: hidden;
+}
+
+.risk-bar .risk-fill {
+  height: 100%;
+  border-radius: 2px;
+  transition: width .3s;
+}
+
+.risk-bar .risk-fill.risk-low      { background: #22C55E; }
+.risk-bar .risk-fill.risk-medium   { background: #EAB308; }
+.risk-bar .risk-fill.risk-high     { background: #F97316; }
+.risk-bar .risk-fill.risk-critical { background: #EF4444; }

@@ -1,0 +1,26 @@
+import { NgModule } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule, ReactiveFormsModule } from '@angular/forms';
+import { SharedModule } from 'src/app/shared/shared.module';
+import { TaxableProductsRoutingModule } from './taxable-products-routing.module';
+import { TaxableProductListComponent }   from '../pages/taxable-product-list/taxable-product-list.component';
+import { TaxableProductCreateComponent } from '../pages/taxable-product-create/taxable-product-create.component';
+import { TaxableProductEditComponent } from '../pages/taxable-product-edit/taxable-product-edit.component';
+import { TaxableProductViewComponent } from '../pages/taxable-product-view/taxable-product-view.component';
+
+@NgModule({
+  declarations: [
+    TaxableProductListComponent, 
+    TaxableProductCreateComponent,
+    TaxableProductViewComponent,
+    TaxableProductEditComponent
+  ],
+  imports: [
+    CommonModule, 
+    FormsModule, 
+    SharedModule, 
+    ReactiveFormsModule,
+    TaxableProductsRoutingModule
+  ]
+})
+export class TaxableProductsModule { }

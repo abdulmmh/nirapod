@@ -1,0 +1,235 @@
+<div class="page-header">
+  <div class="page-header-left">
+    <h4>Add Document</h4>
+    <p>Submit a new document for verification.</p>
+  </div>
+  <button class="btn-back" (click)="onCancel()">
+    <i class="bi bi-arrow-left"></i> Back to List
+  </button>
+</div>
+
+<div class="loading-overlay" *ngIf="isLoading">
+  <div class="spinner-border text-success"></div>
+  <p>Loading document data...</p>
+</div>
+
+<div class="form-card">
+
+  <!-- Taxpayer Search (replaces raw tinNumber/taxpayerName inputs) -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon"><i class="bi bi-person-badge-fill"></i></div>
+      <div>
+        <h6 class="section-title">Taxpayer</h6>
+        <span class="section-sub">Search and select the taxpayer</span>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label class="form-label required">Find Taxpayer</label>
+        <div class="search-row">
+          <div class="input-wrap search-input-wrap">
+            <i class="bi bi-search input-icon"></i>
+            <input type="text" class="form-input"
+              placeholder="Enter NID, name or TIN..."
+              [(ngModel)]="searchQuery"
+              [disabled]="selectedTaxpayer !== null"
+              (keyup.enter)="searchTaxpayer()" />
+            <button *ngIf="selectedTaxpayer" class="clear-btn" (click)="clearTaxpayer()">
+              <i class="bi bi-x-lg"></i>
+            </button>
+          </div>
+          <button class="btn-search" (click)="searchTaxpayer()"
+            [disabled]="isSearching || selectedTaxpayer !== null">
+            <span *ngIf="!isSearching"><i class="bi bi-search"></i> Search</span>
+            <span *ngIf="isSearching"><span class="spinner-border spinner-border-sm"></span></span>
+          </button>
+        </div>
+        <!-- Results -->
+        <div class="search-results" *ngIf="showResults && searchResults.length > 0">
+          <div class="result-item" *ngFor="let t of searchResults" (click)="selectTaxpayer(t)">
+            <div class="result-avatar"><i class="bi bi-person-fill"></i></div>
+            <div class="result-info">
+              <span class="result-name">{{ getDisplayName(t) }}</span>
+              <span class="result-meta">
+                <span *ngIf="t.nid">NID: {{ t.nid }}</span>
+                <span *ngIf="t.phone"> · {{ t.phone }}</span>
+              </span>
+            </div>
+            <span class="result-badge">Select</span>
+          </div>
+        </div>
+        <!-- Selected -->
+        <div class="selected-card" *ngIf="selectedTaxpayer">
+          <div class="selected-card-left">
+            <div class="selected-avatar"><i class="bi bi-person-check-fill"></i></div>
+            <div>
+              <p class="selected-name">{{ getDisplayName(selectedTaxpayer) }}</p>
+              <p class="selected-meta">
+                <span *ngIf="selectedTaxpayer.nid">NID: {{ selectedTaxpayer.nid }}</span>
+                <span *ngIf="selectedTaxpayer.tinNumber"> · TIN: {{ selectedTaxpayer.tinNumber }}</span>
+              </p>
+            </div>
+          </div>
+          <div class="autofill-tag"><i class="bi bi-check-circle-fill"></i> Selected</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 2: Document Details -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon teal">
+        <i class="bi bi-file-earmark-text-fill"></i>
+      </div>
+      <div>
+        <h6 class="section-title">Document Details</h6>
+        <span class="section-sub">Type, category and document information</span>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label required">Document Type</label>
+        <div class="input-wrap">
+          <i class="bi bi-tag-fill input-icon"></i>
+          <select class="form-input form-select" [(ngModel)]="form.documentType">
+            <option value="">Select Type</option>
+            <option *ngFor="let t of documentTypes" [value]="t">{{ t }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label required">Category</label>
+        <div class="input-wrap">
+          <i class="bi bi-folder-fill input-icon"></i>
+          <select class="form-input form-select" [(ngModel)]="form.documentCategory">
+            <option value="">Select Category</option>
+            <option *ngFor="let c of documentCategories" [value]="c">{{ c }}</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group full-width">
+        <label class="form-label required">Document Title</label>
+        <div class="input-wrap">
+          <i class="bi bi-file-earmark input-icon"></i>
+          <input type="text" class="form-input"
+            placeholder="e.g. Trade License 2024" [(ngModel)]="form.documentTitle" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Reference No.</label>
+        <div class="input-wrap">
+          <i class="bi bi-hash input-icon"></i>
+          <input type="text" class="form-input"
+            placeholder="e.g. TL-44821" [(ngModel)]="form.referenceNo" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Submission Date</label>
+        <div class="input-wrap">
+          <i class="bi bi-calendar3 input-icon"></i>
+          <input type="date" class="form-input"
+            [(ngModel)]="form.submissionDate" />
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 3: Validity -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon orange">
+        <i class="bi bi-calendar-range-fill"></i>
+      </div>
+      <div>
+        <h6 class="section-title">Document Validity</h6>
+        <span class="section-sub">Issue date and expiry information</span>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group">
+        <label class="form-label">Issue Date</label>
+        <div class="input-wrap">
+          <i class="bi bi-calendar-check input-icon"></i>
+          <input type="date" class="form-input" [(ngModel)]="form.issueDate" />
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Expiry Date</label>
+        <div class="input-wrap">
+          <i class="bi bi-calendar-x input-icon"></i>
+          <input type="date" class="form-input" [(ngModel)]="form.expiryDate" />
+        </div>
+      </div>
+
+      <!-- Validity Preview -->
+      <div class="form-group full-width" *ngIf="form.issueDate || form.expiryDate">
+        <div class="validity-preview">
+          <div class="validity-item" *ngIf="form.issueDate">
+            <i class="bi bi-calendar-check"></i>
+            <span>Issued: {{ form.issueDate }}</span>
+          </div>
+          <div class="validity-arrow" *ngIf="form.issueDate && form.expiryDate">
+            <i class="bi bi-arrow-right"></i>
+          </div>
+          <div class="validity-item" *ngIf="form.expiryDate">
+            <i class="bi bi-calendar-x"></i>
+            <span>Expires: {{ form.expiryDate }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="section-divider"></div>
+
+  <!-- Section 4: Remarks -->
+  <div class="form-section">
+    <div class="section-header">
+      <div class="section-icon purple">
+        <i class="bi bi-chat-text-fill"></i>
+      </div>
+      <div>
+        <h6 class="section-title">Remarks</h6>
+        <span class="section-sub">Optional notes or observations</span>
+      </div>
+    </div>
+    <div class="form-grid">
+      <div class="form-group full-width">
+        <label class="form-label">Remarks / Notes</label>
+        <div class="input-wrap">
+          <i class="bi bi-pencil-square input-icon textarea-icon"></i>
+          <textarea class="form-input form-textarea"
+            placeholder="Enter any additional remarks..."
+            [(ngModel)]="form.remarks" rows="3"></textarea>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Form Actions -->
+  <div class="form-actions">
+    <button class="btn-cancel" (click)="onCancel()" [disabled]="isLoading">
+      <i class="bi bi-x-lg"></i> Cancel
+    </button>
+    <button class="btn-reset" (click)="onReset()" [disabled]="isLoading">
+      <i class="bi bi-arrow-counterclockwise"></i> Reset
+    </button>
+    <button class="btn-submit" (click)="onSubmit()"
+      [disabled]="isLoading || !isFormValid()">
+      <span *ngIf="!isLoading">
+        <i class="bi bi-patch-check-fill"></i> Submit Document
+      </span>
+      <span *ngIf="isLoading">
+        <span class="spinner-border spinner-border-sm me-2"></span>
+        Submitting...
+      </span>
+    </button>
+  </div>
+
+</div>

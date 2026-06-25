@@ -1,0 +1,56 @@
+.thc-rate-value {
+  font-size: 48px;
+  font-weight: 900;
+  line-height: 1;
+}
+.thc-rate-label {
+  font-size: 13px;
+  color: rgba(255, 255, 255, 0.7);
+  margin-top: 4px;
+}
+.detail-value.rate-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: #1a3f8f;
+}
+.applicable-badge {
+  font-size: 11px;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.85);
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+
+/* Tax type badges in detail body */
+.type-badge {
+  font-size: 11px;
+  font-weight: 600;
+  padding: 3px 9px;
+  border-radius: 5px;
+  white-space: nowrap;
+}
+.type-vat {
+  background: #e6f7f3;
+  color: #1faa8b;
+}
+.type-ait {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-import {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-it {
+  background: #e8eef9;
+  color: #1a3f8f;
+}
+.type-excise {
+  background: #fff0f0;
+  color: #e74c3c;
+}
+.type-sd {
+  background: #fef3e2;
+  color: #f59e0b;
+}

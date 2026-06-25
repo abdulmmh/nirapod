@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="16dp"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="📁 Case Information"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" />
+
+            <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Case No" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_case_no" android:gravity="end" android:textStyle="bold" android:fontFamily="monospace" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Audit Type" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_audit_type" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Tax Type" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_tax_type" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Fiscal Year" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_fiscal_year" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Period" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_period" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Status" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_status" android:gravity="end" android:textColor="@color/primary" android:textStyle="bold" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+    <androidx.cardview.widget.CardView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        app:cardCornerRadius="12dp"
+        app:cardElevation="2dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="👤 Contact Details"
+                android:textColor="@color/text_primary"
+                android:textSize="14sp"
+                android:textStyle="bold" />
+
+            <View android:layout_width="match_parent" android:layout_height="1dp" android:background="#F0F0F0" android:layout_marginTop="12dp" android:layout_marginBottom="12dp" />
+
+            <TableLayout android:layout_width="match_parent" android:layout_height="wrap_content" android:stretchColumns="1">
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Audit Officer" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_officer" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Supervisor" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_supervisor" android:gravity="end" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Due Date" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_due_date" android:gravity="end" android:textColor="@color/error" />
+                </TableRow>
+                <TableRow android:paddingVertical="4dp">
+                    <TextView android:text="Notice Issued" android:textColor="@color/text_secondary" android:textSize="13sp" />
+                    <TextView android:id="@+id/tv_val_notice_date" android:gravity="end" />
+                </TableRow>
+            </TableLayout>
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

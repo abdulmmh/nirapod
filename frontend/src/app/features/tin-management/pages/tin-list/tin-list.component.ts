@@ -1,0 +1,352 @@
+import { Component, OnInit, OnDestroy } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Router, ActivatedRoute } from '@angular/router';
+import { API_ENDPOINTS } from '../../../../core/constants/api.constants';
+import { Tin } from '../../../../models/tin.model';
+import { finalize, Subject, takeUntil } from 'rxjs';
+import { ToastService } from 'src/app/shared/toast/toast.service';
+
+@Component({
+  selector: 'app-tin-list',
+  templateUrl: './tin-list.component.html',
+  styleUrls: ['./tin-list.component.css'],
+})
+export class TinListComponent implements OnInit, OnDestroy {
+  // ────────────────── Properties ──────────────────
+
+  tins: Tin[] = [];
+  searchTerm = '';
+  isLoading = false;
+  isExporting = false;
+
+  private destroy$ = new Subject<void>();
+
+  showDeleteModal = false;
+  pendingDeleteId: number | null = null;
+
+  // ── Filters — matches Payment/ITR module's dropdown pattern ────────────────
+  statusFilter   = '';
+  categoryFilter = '';
+  zoneFilter     = '';
+
+  readonly statusOptions: string[] = ['Active', 'Inactive', 'Pending', 'Suspended', 'Cancelled'];
+  readonly categoryOptions: string[] = ['Individual', 'Company', 'Partnership', 'NGO', 'Government'];
+  zoneOptions: string[] = [];   // populated from taxZone once data loads
+
+  // ── Pagination ──────────────────────────────────────────────────────────
+  currentPage = 1;
+  pageSize = 20;
+  readonly pageSizeOptions = [10, 20, 50, 100];
+
+  // ────────────── Constructor ───────────────────
+
+  constructor(
+    private http: HttpClient,
+    private route: ActivatedRoute,
+    private router: Router,
+    private toast: ToastService,
+  ) {}
+
+  // ─────────────── Lifecycle ───────────────────
+
+  ngOnInit(): void {
+    this.fetchTins(); // Typo fixed
+  }
+
+  ngOnDestroy(): void {
+    this.destroy$.next();
+    this.destroy$.complete();
+  }
+
+  // ───────────────── Data Fetching ────────────────────────
+
+  private fetchTins(): void {
+    this.isLoading = true;
+
+    this.http
+      .get<Tin[]>(API_ENDPOINTS.TINS.LIST)
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)),
+      )
+      .subscribe({
+        next: (data) => this.handleFetchSuccess(data),
+        error: (error) => this.handleFetchError(error),
+      });
+  }
+
+  private handleFetchSuccess(data: Tin[]): void {
+    this.tins = data || [];
+    this.buildZoneOptions();
+    this.notifyIfEmpty(this.tins);
+  }
+
+  private handleFetchError(error: unknown): void {
+    console.error('Error loading TIN records:', error);
+    this.toast.error('Failed to load TIN records. Please refresh the page.');
+  }
+
+  private notifyIfEmpty(data: Tin[]): void {
+    if (data.length === 0) {
+      this.toast.info('No TIN records found. Click "Issue TIN" to add one.');
+    }
+  }
+
+  /** Extracts distinct tax zones for the Zone filter dropdown. */
+  private buildZoneOptions(): void {
+    const zones = new Set<string>();
+    for (const t of this.tins) {
+      if (t.taxZone) zones.add(t.taxZone);
+    }
+    this.zoneOptions = Array.from(zones).sort();
+  }
+
+  // ── KPI Summary Cards — mirrors Payment/ITR module's card row ──────────────
+
+  get kpiActive(): number {
+    return this.tins.filter((t) => t.status === 'Active').length;
+  }
+
+  get kpiPending(): number {
+    return this.tins.filter((t) => t.status === 'Pending').length;
+  }
+
+  get kpiSuspended(): number {
+    return this.tins.filter((t) => t.status === 'Suspended').length;
+  }
+
+  get kpiCompanies(): number {
+    return this.tins.filter((t) => t.tinCategory === 'Company').length;
+  }
+
+  // ────────────────── Filtering ──────────────────────
+
+  get filteredTins(): Tin[] {
+    let result = this.tins;
+
+    if (this.searchTerm.trim()) {
+      const term = this.searchTerm.toLowerCase();
+      result = result.filter((t) => this.matchesSearch(t, term));
+    }
+
+    if (this.statusFilter) {
+      result = result.filter((t) => t.status === this.statusFilter);
+    }
+    if (this.categoryFilter) {
+      result = result.filter((t) => t.tinCategory === this.categoryFilter);
+    }
+    if (this.zoneFilter) {
+      result = result.filter((t) => t.taxZone === this.zoneFilter);
+    }
+
+    return result;
+  }
+
+  private matchesSearch(t: Tin, term: string): boolean {
+    const tinNo = t.tinNumber ? t.tinNumber.toLowerCase() : '';
+    const name = t.taxpayerName ? t.taxpayerName.toLowerCase() : '';
+    const category = t.tinCategory ? t.tinCategory.toLowerCase() : '';
+    const zone = t.taxZone ? t.taxZone.toLowerCase() : '';
+    const district = t.district ? t.district.toLowerCase() : '';
+
+    return (
+      tinNo.includes(term) ||
+      name.includes(term) ||
+      category.includes(term) ||
+      zone.includes(term) ||
+      district.includes(term)
+    );
+  }
+
+  hasActiveFilters(): boolean {
+    return !!(this.searchTerm || this.statusFilter || this.categoryFilter || this.zoneFilter);
+  }
+
+  clearFilters(): void {
+    this.searchTerm     = '';
+    this.statusFilter   = '';
+    this.categoryFilter = '';
+    this.zoneFilter      = '';
+    this.currentPage     = 1;
+  }
+
+  /** Called when a clickable KPI status card is clicked — toggles filter. */
+  onKpiCardClick(status: string): void {
+    this.statusFilter = this.statusFilter === status ? '' : status;
+    this.currentPage  = 1;
+  }
+
+  isKpiActive(status: string): boolean {
+    return this.statusFilter === status;
+  }
+
+  /** Any filter/search change resets back to page 1 — call from (ngModelChange). */
+  onFilterChange(): void {
+    this.currentPage = 1;
+  }
+
+  // ── Pagination ───────────────────────────────────────────────────────────
+
+  get totalPages(): number {
+    return Math.max(1, Math.ceil(this.filteredTins.length / this.pageSize));
+  }
+
+  get paginatedTins(): Tin[] {
+    const start = (this.currentPage - 1) * this.pageSize;
+    return this.filteredTins.slice(start, start + this.pageSize);
+  }
+
+  get pageRangeStart(): number {
+    if (this.filteredTins.length === 0) return 0;
+    return (this.currentPage - 1) * this.pageSize + 1;
+  }
+
+  get pageRangeEnd(): number {
+    return Math.min(this.currentPage * this.pageSize, this.filteredTins.length);
+  }
+
+  goToPrevPage(): void {
+    if (this.currentPage > 1) this.currentPage--;
+  }
+
+  goToNextPage(): void {
+    if (this.currentPage < this.totalPages) this.currentPage++;
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1;
+  }
+
+  // ──────────────── Delete Flow ─────────────────
+
+  confirmDelete(id: number): void {
+    this.pendingDeleteId = id;
+    this.showDeleteModal = true;
+  }
+
+  cancelDelete(): void {
+    this.resetDeleteState();
+  }
+
+
+
+  confirmDeleteExecute(): void {
+    if (this.pendingDeleteId === null) return;
+    const id = this.pendingDeleteId;
+    this.resetDeleteState();
+    this.deleteTin(id);
+  }
+
+  private deleteTin(id: number): void {
+    this.isLoading = true;
+
+    this.http
+      .delete(API_ENDPOINTS.TINS.DELETE(id))
+      .pipe(
+        takeUntil(this.destroy$),
+        finalize(() => (this.isLoading = false)),
+      )
+      .subscribe({
+        next: () => this.handleDeleteSuccess(id),
+        error: () => this.handleDeleteError(),
+      });
+  }
+
+  private handleDeleteSuccess(id: number): void {
+    this.tins = this.tins.filter((t) => t.id !== id);
+    this.toast.success('TIN record deleted successfully.');
+  }
+
+  private handleDeleteError(): void {
+    this.toast.error('Failed to delete TIN record. Please try again.');
+  }
+
+  private resetDeleteState(): void {
+    this.pendingDeleteId = null;
+    this.showDeleteModal = false;
+  }
+
+  // ───────────────── Navigation ───────────────────────
+
+  view(id: number): void {
+    this.router.navigate(['view', id], {
+      relativeTo: this.route
+    });
+  }
+
+  edit(id: number): void {
+    this.router.navigate(['edit', id], {
+      relativeTo: this.route
+    });
+  }
+
+  navigateToCreate(): void {
+    this.router.navigate(['create'], {
+      relativeTo: this.route
+    });
+  }
+
+  // ────────────── Actions ─────────────────────────
+
+  onExport(): void {
+    this.isExporting = true;
+    
+    this.http.get(API_ENDPOINTS.TINS.EXPORT, { responseType: 'blob' })
+        .subscribe({
+          next: (blob: Blob) => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `TIN_List_Export_${new Date().toISOString().split('T')[0]}.csv`; 
+            document.body.appendChild(a);
+            a.click();
+            
+            document.body.removeChild(a);
+            window.URL.revokeObjectURL(url);
+            
+            this.isExporting = false;
+            this.toast.success('TIN data exported successfully!');
+          },
+          error: () => {
+            this.isExporting = false;
+            this.toast.error('Failed to export TIN data.');
+          }
+        });
+    }
+
+
+  // ────────────── UI Helpers ─────────────────────────
+
+  getStatusClass(s: string): string {
+    const map: Record<string, string> = {
+      Active: 'status-active',
+      Inactive: 'status-inactive',
+      Pending: 'status-pending',
+      Suspended: 'status-suspended',
+      Cancelled: 'status-inactive',
+    };
+    return map[s] ?? '';
+  }
+
+  getCategoryClass(c: string): string {
+    const map: Record<string, string> = {
+      Individual: 'cat-individual',
+      Company: 'cat-company',
+      Partnership: 'cat-partner',
+      NGO: 'cat-ngo',
+      Government: 'cat-govt',
+    };
+    return map[c] ?? 'cat-individual';
+  }
+
+  getCategoryIcon(c: string): string {
+    const map: Record<string, string> = {
+      Individual: 'bi bi-person-fill',
+      Company: 'bi bi-building-fill',
+      Partnership: 'bi bi-people-fill',
+      NGO: 'bi bi-heart-fill',
+      Government: 'bi bi-bank2',
+    };
+    return map[c] ?? 'bi bi-person-fill';
+  }
+}
